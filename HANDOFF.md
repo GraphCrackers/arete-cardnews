@@ -154,6 +154,12 @@ gc-system이 비공개라, 카드뉴스만 공개 저장소로 분리하기로 �
 
 ## 6. 이미 고친 버그 (재발 주의)
 
+0. **`hidden` 속성이 안 먹던 것** ← 가장 오래 숨어 있던 버그
+   `.picker{display:grid}` · `.bar{display:flex}` 가 `hidden` 의 브라우저 기본 스타일
+   (`display:none`)을 이겨서, **편 선택 오버레이가 화면 전체를 계속 덮고 있었다.**
+   82% 검은 배경이라 화면이 어두웠고, 클릭이 전부 오버레이에 먹혀 편집이 불가능했다.
+   → `[hidden]{display:none!important}` 한 줄로 해결. **이 줄을 지우면 에디터가 다시 멈춘다.**
+
 1. **`style` 속성 안의 큰따옴표**
    `font-family:"Pretendard",...` 의 따옴표가 `style="..."` 를 조기에 닫아서
    그 뒤의 `font-size`·`font-weight`·`color`가 통째로 무시됐다.
@@ -218,8 +224,9 @@ gc-system이 비공개라, 카드뉴스만 공개 저장소로 분리하기로 �
 
 ### 남은 것
 
-- [ ] **공개 저장소 생성 → 업로드 → Settings > Pages 에서 main / (root) 배포**
-      아직 git 저장소도 아니다. 대표의 GitHub 계정이 필요하다. **보류하기로 함**
+- [ ] **공개 저장소 생성 → push → Settings > Pages 에서 main / (root) 배포**
+      로컬 git 저장소·첫 커밋·`.gitignore`·`.nojekyll` 까지는 준비됨.
+      **저장소 생성과 push 는 대표의 GitHub 계정이 필요하다** (`gh` CLI 미설치)
 - [ ] **첫 편 검토 → 게시** — 초안은 나왔다. **대표 확인 전에는 올리지 않는다**
 - [ ] **2·3편** — D1 「상관과 인과」, A1 「AI 시대에 왜 배우나」 순 (소재 로그의 우선순위)
 
