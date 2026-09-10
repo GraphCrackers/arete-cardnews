@@ -8,10 +8,6 @@
   "theme": {
     "picks": [
       {
-        "n": "ivory",
-        "h": "#F5F5E9"
-      },
-      {
         "n": "antracite",
         "h": "#333333"
       },
@@ -22,10 +18,17 @@
       {
         "n": "tangerine",
         "h": "#FF9855"
+      },
+      {
+        "n": "mercury",
+        "h": "#E5E5E5"
       }
     ],
     "dark": false,
-    "font": "SUIT"
+    "font": "NotoSerifKR",
+    "roleMap": {
+      "hl": "#CBEE88"
+    }
   },
   "frame": {
     "label": "입시·공부",
