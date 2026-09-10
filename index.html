@@ -251,6 +251,33 @@ async function loadFontFiles(files){
   return ok;
 }
 const stack=f=>`'${f}',${FALLBACK}`;
+
+/* ============ 로고 ============
+   assets/logo-arete.png 는 **알파 마스크**다 — 모양만 있고 색은 없다.
+   그래서 팔레트 색을 입혀 쓴다. 색깔별로 한 번만 만들어 캐시한다. */
+const LOGO_SRC='assets/logo-arete.png';
+const LOGO_DEF={x:80,b:56,h:78,role:'ink',op:.28};
+let LOGO_IMG=null;
+const logoCache={};
+function initLogo(){
+  return new Promise(res=>{
+    const im=new Image();
+    im.onload=()=>{LOGO_IMG=im;res(true);};
+    im.onerror=()=>res(false);          // 없어도 에디터는 돌아가야 한다
+    im.src=LOGO_SRC;
+  });
+}
+function logoTinted(color){
+  if(!LOGO_IMG)return '';
+  if(logoCache[color])return logoCache[color];
+  const cv=document.createElement('canvas');
+  cv.width=LOGO_IMG.naturalWidth; cv.height=LOGO_IMG.naturalHeight;
+  const g=cv.getContext('2d');
+  g.drawImage(LOGO_IMG,0,0);
+  g.globalCompositeOperation='source-in';   // 알파는 두고 색만 채운다
+  g.fillStyle=color; g.fillRect(0,0,cv.width,cv.height);
+  try{ return logoCache[color]=cv.toDataURL('image/png'); }catch(e){ return ''; }
+}
 async function loadFontManifest(){
   let list=null;
   try{ const m=await getJSON('assets/fonts/index.json'); list=Array.isArray(m)?m:(m.files||[]); }
@@ -430,7 +457,13 @@ function paint(box,c,idx,total){
     h+=`<div style="position:absolute;left:80px;right:80px;top:98px;height:1px;background:${R.line}"></div>`;
   }
   if(fr.footer){
-    if(fr.logo)h+=`<img src="${esc(fr.logo)}" style="position:absolute;left:80px;bottom:56px;height:78px;width:auto;opacity:.28" crossorigin="anonymous">`;
+    if(fr.logoOn!==false){
+      // 직접 넣은 이미지가 있으면 그것을, 없으면 기본 ARETE 로고에 팔레트 색을 입혀 쓴다
+      const lsrc = fr.logo || logoTinted(R[fr.logoRole||LOGO_DEF.role]||R.ink);
+      if(lsrc)h+=`<img src="${esc(lsrc)}" style="position:absolute;left:${fr.logoX??LOGO_DEF.x}px;`
+        +`bottom:${fr.logoB??LOGO_DEF.b}px;height:${fr.logoH??LOGO_DEF.h}px;width:auto;`
+        +`opacity:${fr.logoOp??LOGO_DEF.op}" crossorigin="anonymous">`;
+    }
     h+=`<div style="position:absolute;right:80px;bottom:64px;display:flex;align-items:center;gap:9px;font:600 22px ${stack(F)};color:${R.sub}">
       <span style="width:9px;height:9px;border-radius:9px;background:${R.accent};display:block"></span>${String(idx+1).padStart(2,'0')}</div>`;
   }
@@ -628,7 +661,29 @@ function cardPanel(){
     <button data-v="1" class="${fr.header?'on':''}">머리말</button><button data-v="0" class="${fr.header?'':'on'}">없음</button></div></div>
     <div class="field"><div class="seg" data-seg="footer">
     <button data-v="1" class="${fr.footer?'on':''}">꼬리말</button><button data-v="0" class="${fr.footer?'':'on'}">없음</button></div></div></div>`;
-  h+=`<div class="field"><button class="btn" style="width:100%" data-act="picklogo">${fr.logo?'로고 바꾸기':'로고 이미지 넣기'}</button></div>`;
+  h+=`<div class="field" style="margin-top:8px"><div class="seg" data-seg="logoOn">
+    <button data-v="1" class="${fr.logoOn!==false?'on':''}">로고</button>
+    <button data-v="0" class="${fr.logoOn===false?'on':''}">없음</button></div></div>`;
+  if(fr.logoOn!==false){
+    h+=`<div class="row"><div class="field"><label>왼쪽에서 (px)</label>
+      <input type="number" data-fr="logoX" value="${fr.logoX??LOGO_DEF.x}"></div>
+      <div class="field"><label>아래에서 (px)</label>
+      <input type="number" data-fr="logoB" value="${fr.logoB??LOGO_DEF.b}"></div></div>`;
+    h+=`<div class="row"><div class="field"><label>높이 (px)</label>
+      <input type="number" data-fr="logoH" value="${fr.logoH??LOGO_DEF.h}"></div>
+      <div class="field"><label>진하기</label>
+      <input type="range" min="5" max="100" step="5" data-fr="logoOp100" value="${Math.round((fr.logoOp??LOGO_DEF.op)*100)}"></div></div>`;
+    if(!fr.logo){
+      h+=`<div class="field"><label>색</label><select data-fr="logoRole">
+        ${[['ink','본문색'],['sub','보조색'],['accent','포인트색'],['hl','형광색'],['bg','배경색(반전)']]
+          .map(([v,n])=>`<option value="${v}" ${(fr.logoRole||LOGO_DEF.role)===v?'selected':''}>${n}</option>`).join('')}
+        </select></div>`;
+    }
+    h+=`<div class="row"><div class="field"><button class="btn" style="width:100%" data-act="picklogo">${fr.logo?'다른 이미지로':'다른 이미지 쓰기'}</button></div>`;
+    h+=`<div class="field"><button class="btn" style="width:100%" data-act="logoreset">기본 로고로</button></div></div>`;
+    h+=`<p class="hint">${fr.logo?'직접 넣은 이미지라 색은 못 바꿉니다. 「기본 로고로」를 누르면 팔레트 색을 따릅니다.'
+      :'기본 ARETE 로고입니다. 팔레트를 바꾸면 색이 따라옵니다.'}</p>`;
+  }
   h+=`<p class="hint">페이지 번호는 카드 순서에 따라 자동으로 매겨집니다.</p>`;
 
   h+=`<div class="divider"></div><h3 style="padding:0 0 6px">배경</h3>`;
@@ -666,7 +721,11 @@ function bind(){
     card().bg[inp.dataset.bg]=inp.dataset.bg==='tintA'?parseFloat(inp.value):inp.value;
     paint($('#canvas'),card(),cur,project.cards.length);chrome();cardList();save();}));
   box.querySelectorAll('[data-fr]').forEach(inp=>inp.addEventListener('input',()=>{
-    project.frame[inp.dataset.fr]=inp.value;paint($('#canvas'),card(),cur,project.cards.length);chrome();cardList();save();}));
+    const k=inp.dataset.fr;
+    if(k==='logoOp100')project.frame.logoOp=(+inp.value||28)/100;      // 슬라이더는 %, 저장은 0~1
+    else if(/^logo(X|B|H)$/.test(k))project.frame[k]=+inp.value||0;    // 숫자로 저장한다
+    else project.frame[k]=inp.value;
+    paint($('#canvas'),card(),cur,project.cards.length);chrome();cardList();save();}));
   box.querySelectorAll('[data-th]').forEach(inp=>inp.addEventListener('change',()=>{project.theme[inp.dataset.th]=inp.value;render();}));
   box.querySelectorAll('[data-seg]').forEach(seg=>seg.addEventListener('click',ev=>{
     const v=ev.target.dataset.v; if(v===undefined)return; const key=seg.dataset.seg, e=sel();
@@ -674,6 +733,7 @@ function bind(){
     else if(key==='ratio'){project.size={w:1080,h:v==='45'?1350:1080};applySize();}
     else if(key==='dark')project.theme.dark=v==='1';
     else if(key==='header'||key==='footer')project.frame[key]=v==='1';
+    else if(key==='logoOn')project.frame.logoOn=v==='1';
     else if(key==='italic'&&e)e.italic=v==='1';
     else if(e)e[key]=v;
     render();}));
@@ -707,6 +767,7 @@ function act(a){
   if(a==='pickimg')pickImg(d=>{e.src=d;render();});
   if(a==='pickbg')pickImg(d=>{card().bg.src=d;card().bg.type='image';render();});
   if(a==='picklogo')pickImg(d=>{project.frame.logo=d;render();});
+  if(a==='logoreset'){project.frame.logo='';render();toast('기본 ARETE 로고로 되돌렸어요');}
 }
 function pickImg(cb){const f=$('#filePick');f.value='';
   f.onchange=()=>{const file=f.files[0];if(!file)return;const r=new FileReader();
@@ -882,6 +943,7 @@ async function load(){
     $('#barFileX')?.addEventListener('click',()=>{$('#bar').hidden=true;});
   }
   await loadFontManifest();
+  await initLogo();            // 로고가 준비된 뒤에 첫 렌더가 돌아야 한다
   const localP=await readLocal();
   let remoteP=null;
   if(PID){ try{ const p=await getJSON(`projects/${PID}.json`); if(p.cards?.length)remoteP=p; }catch{} }
