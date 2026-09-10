@@ -62,10 +62,34 @@ print()
 if input("진행할까요? (엔터 = 예 / n = 취소) ").strip().lower() == "n":
     print("취소했습니다."); raise SystemExit(1)
 
-# 2) 편 파일을 제자리에 넣는다
-shutil.copy2(src, dst)
+# 2) JSON 안에 통째로 들어간 이미지를 파일로 빼낸다
+#    에디터에서 사진을 넣으면 base64 로 박혀서 JSON 이 수백 KB~수 MB 가 된다.
+#    assets/img/ 로 빼고 경로만 남기면 파일이 작아지고 변경 내역도 읽을 수 있다.
+import base64, re, hashlib
+EXT = {"image/png":"png","image/jpeg":"jpg","image/webp":"webp",
+       "image/gif":"gif","image/svg+xml":"svg"}
+os.makedirs(os.path.join(REPO,"assets","img"), exist_ok=True)
+moved = 0
+for ci, c in enumerate(data.get("cards", [])):
+    for e in c.get("els", []):
+        v = e.get("src","")
+        if not (isinstance(v,str) and v.startswith("data:")): continue
+        m = re.match(r"data:([^;,]+);base64,(.*)$", v, re.S)
+        if not m: continue
+        raw = base64.b64decode(m.group(2))
+        ext = EXT.get(m.group(1), "bin")
+        fn  = f"{pid}-{ci+1:02d}-{hashlib.sha1(raw).hexdigest()[:8]}.{ext}"
+        open(os.path.join(REPO,"assets","img",fn), "wb").write(raw)
+        e["src"] = f"assets/img/{fn}"
+        moved += 1
+if moved:
+    print(f"사진 {moved}개를 assets/img/ 로 빼냈습니다. (JSON 이 그만큼 가벼워집니다)")
+    print()
 
-# 3) 새 편이면 목록에 추가한다
+# 3) 편 파일을 제자리에 넣는다
+json.dump(data, open(dst,"w",encoding="utf-8"), ensure_ascii=False, indent=2)
+
+# 4) 새 편이면 목록에 추가한다
 idxp = os.path.join(REPO, "projects", "index.json")
 idx = []
 if os.path.exists(idxp):
@@ -79,8 +103,8 @@ else:
         if x.get("id") == pid: x["title"] = name
 json.dump(idx, open(idxp, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
 
-# 4) 커밋
-subprocess.run(["git", "add", "projects/"], cwd=REPO, check=True)
+# 5) 커밋
+subprocess.run(["git", "add", "projects/", "assets/img/"], cwd=REPO, check=True)
 r = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=REPO)
 if r.returncode == 0:
     print("바뀐 내용이 없습니다. (같은 파일을 다시 올렸을 수 있어요)")

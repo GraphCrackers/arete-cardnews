@@ -76,12 +76,12 @@
         {
           "id": "053e45b",
           "type": "image",
-          "x": 520,
-          "y": 750,
-          "w": 480,
-          "h": 480,
+          "x": 226,
+          "y": 517,
+          "w": 774,
+          "h": 713,
           "opacity": 1,
-          "src": "",
+          "src": "assets/img/resilience-01-bfb981c8.png",
           "fit": "cover",
           "radius": 999
         }
@@ -173,11 +173,11 @@
           "id": "7a51214",
           "type": "image",
           "x": 80,
-          "y": 760,
+          "y": 765,
           "w": 920,
           "h": 200,
           "opacity": 1,
-          "src": "",
+          "src": "assets/img/resilience-02-f6f1191b.png",
           "fit": "cover",
           "radius": 0
         },
