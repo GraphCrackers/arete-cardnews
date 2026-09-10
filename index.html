@@ -123,6 +123,8 @@ input[type=range]{width:100%;accent-color:var(--sel)}
   padding:9px 11px;margin-bottom:6px;text-decoration:none;color:var(--ink)}
 .pbox a.item:hover{border-color:var(--sel)}
 .pbox a.item small{display:block;color:var(--dim);font-size:11px;margin-top:2px}
+.pbox a.item.on{border-color:var(--sel)}
+.pbox a.item b{float:right;font-size:11px;color:var(--sel);font-weight:600}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--panel2);
   border:1px solid var(--sel);border-radius:7px;padding:8px 15px;opacity:0;transition:opacity .18s;
   pointer-events:none;z-index:99;max-width:70vw;text-align:center}
@@ -134,6 +136,7 @@ input[type=range]{width:100%;accent-color:var(--sel)}
   <span class="brand">ARETE<i>카드뉴스 에디터</i></span>
   <input id="projName" value="제목 없는 카드뉴스">
   <span class="spacer"></span>
+  <button class="btn ghost" id="btnList">편 목록</button>
   <button class="btn ghost" id="btnFonts">폰트 폴더 불러오기</button>
   <button class="btn ghost" id="btnShare">공유 링크 복사</button>
   <button class="btn ghost" id="btnImport">JSON 불러오기</button>
@@ -967,19 +970,32 @@ async function load(){
   }
 }
 
-async function picker(){
+// manual=true 면 편집 중에 [편 목록] 버튼으로 연 것 — 닫기가 있어야 한다
+async function picker(manual){
   let list=null;
   try{ const m=await getJSON('projects/index.json');
     list=(Array.isArray(m)?m:m.projects||[]).map(x=>typeof x==='string'?{id:x,title:x}:x); }catch{}
-  if(!list||!list.length)return;               // 목록 파일이 없으면 그냥 빈 편집기로
+  if(!list||!list.length){
+    if(manual)toast('projects/index.json 이 없어서 목록을 못 읽었어요');
+    return;                                    // 처음 열 때는 그냥 빈 편집기로
+  }
   const el=$('#picker'); el.hidden=false;
-  el.innerHTML=`<div class="pbox"><h2>어떤 카드뉴스를 열까요?</h2>
-    <p>편집할 편을 고르세요. 주소창에 <code>?p=파일이름</code> 을 붙여도 바로 열립니다.</p>
-    ${list.map(x=>`<a class="item" href="?p=${encodeURIComponent(x.id)}">${esc(x.title||x.id)}
-      <small>projects/${esc(x.id)}.json</small></a>`).join('')}
-    <button class="btn" style="width:100%;margin-top:8px" id="pkNew">빈 카드뉴스로 시작</button></div>`;
+  el.innerHTML=`<div class="pbox">
+    <h2>${manual?'다른 편 열기':'어떤 카드뉴스를 열까요?'}</h2>
+    <p>${manual?'지금 작업은 이 브라우저에 자동으로 남습니다. 저장소에 반영하려면 <b>JSON 내보내기</b>를 누르세요.'
+               :'편집할 편을 고르세요. 주소창에 <code>?p=파일이름</code> 을 붙여도 바로 열립니다.'}</p>
+    ${list.map(x=>{
+      const on = PID && x.id===PID;
+      return `<a class="item${on?' on':''}" href="?p=${encodeURIComponent(x.id)}">${esc(x.title||x.id)}
+        ${on?'<b>지금 보는 편</b>':''}<small>projects/${esc(x.id)}.json</small></a>`;
+    }).join('')}
+    <div class="row" style="margin-top:8px">
+      ${manual?'<button class="btn" style="width:100%" id="pkClose">닫기</button>':''}
+      <button class="btn" style="width:100%" id="pkNew">빈 카드뉴스로 시작</button></div></div>`;
   $('#pkNew').onclick=()=>{el.hidden=true;};
+  const cl=$('#pkClose'); if(cl)cl.onclick=()=>{el.hidden=true;};
 }
+$('#btnList').onclick=()=>picker(true);
 
 $('#btnShare').onclick=async()=>{
   if(!PID)return toast('먼저 이 카드뉴스를 projects/ 에 올리고 ?p=파일이름 주소로 열어주세요');
