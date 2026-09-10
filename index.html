@@ -123,6 +123,11 @@ input[type=range]{width:100%;accent-color:var(--sel)}
   padding:9px 11px;margin-bottom:6px;text-decoration:none;color:var(--ink)}
 .pbox a.item:hover{border-color:var(--sel)}
 .pbox a.item small{display:block;color:var(--dim);font-size:11px;margin-top:2px}
+.rolepick{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.rolepick .sw{width:18px;height:18px;border-radius:4px;border:1px solid var(--line);flex:none}
+.rolepick .nm{width:36px;font-size:12px;color:var(--dim);flex:none}
+.rolepick select{flex:1;min-width:0}
+.rolepick input[type=color]{width:30px;height:26px;padding:0;flex:none}
 .pbox a.item.on{border-color:var(--sel)}
 .pbox a.item b{float:right;font-size:11px;color:var(--sel);font-weight:600}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--panel2);
@@ -328,12 +333,14 @@ const sel=()=>card().els.find(e=>e.id===selId)||null;
 /* ---- 팔레트 역할 배정 ---- */
 function roles(){
   const t=project.theme, p=t.picks.length?t.picks.map(x=>x.h):['#f2f0e4','#28282d'];
+  // theme.roleMap 에 값이 있으면 그것을 쓴다. 비어 있으면 예전처럼 자동으로 잡는다
+  const M = t.roleMap || {};
   const byL=[...p].sort((a,b)=>lum(b)-lum(a));
-  const bg = t.dark ? byL[byL.length-1] : byL[0];
-  const ink = p.reduce((b,c)=>ratio(c,bg)>ratio(b,bg)?c:b, p[0]);
+  const bg = M.bg || (t.dark ? byL[byL.length-1] : byL[0]);
+  const ink = M.ink || p.reduce((b,c)=>ratio(c,bg)>ratio(b,bg)?c:b, p[0]);
   const rest = p.filter(c=>c!==bg&&c!==ink);
-  const hl = rest.slice().sort((a,b)=>sat(b)-sat(a))[0] || mix(ink,bg,.75);
-  const accent = rest.find(c=>c!==hl) || hl;
+  const hl = M.hl || rest.slice().sort((a,b)=>sat(b)-sat(a))[0] || mix(ink,bg,.75);
+  const accent = M.accent || rest.find(c=>c!==hl) || hl;
   return { bg, ink, hl, accent,
     sub: mix(ink,bg,.48), line: mix(ink,bg,.82),
     onHl: onColor(hl, ink, bg) };
@@ -647,6 +654,27 @@ function cardPanel(){
   }
   h+=`<div class="field" style="margin-top:9px"><div class="seg" data-seg="dark">
     <button data-v="0" class="${t.dark?'':'on'}">밝은 배경</button><button data-v="1" class="${t.dark?'on':''}">어두운 배경</button></div></div>`;
+
+  // 역할 직접 배정 — 비워두면 위 자동 배치를 따른다
+  {
+    const M=t.roleMap||{};
+    const ROLES=[['bg','배경'],['ink','본문'],['hl','형광'],['accent','포인트']];
+    const anyFixed=ROLES.some(([k])=>M[k]);
+    h+=`<div class="field" style="margin-top:9px">
+      <label>색 배정 ${anyFixed?'<b style="color:var(--sel)">일부 직접 지정됨</b>':'(비우면 자동)'}</label></div>`;
+    h+=ROLES.map(([k,n])=>`<div class="rolepick">
+      <span class="sw" style="background:${R[k]}"></span>
+      <span class="nm">${n}</span>
+      <select data-role="${k}">
+        <option value="" ${M[k]?'':'selected'}>자동</option>
+        ${t.picks.map(p=>`<option value="${p.h}" ${M[k]===p.h?'selected':''}>${esc(p.n)}</option>`).join('')}
+        ${M[k]&&!t.picks.some(p=>p.h===M[k])?`<option value="${M[k]}" selected>직접 지정 ${M[k]}</option>`:''}
+      </select>
+      <input type="color" data-rolehex="${k}" value="${R[k]}" title="아무 색이나 직접">
+    </div>`).join('');
+    if(anyFixed)h+=`<div class="field"><button class="btn" style="width:100%" data-act="rolesauto">전부 자동으로</button></div>`;
+    h+=`<p class="hint">‘자동’은 밝기·채도로 알아서 배치합니다. 마음에 안 들면 여기서 직접 고르세요.</p>`;
+  }
   h+=`<div class="roles">
     <div><i style="background:${R.bg}"></i>배경</div><div><i style="background:${R.ink}"></i>본문</div>
     <div><i style="background:${R.hl}"></i>형광</div><div><i style="background:${R.accent}"></i>포인트</div>
@@ -743,6 +771,19 @@ function bind(){
     paint($('#canvas'),card(),cur,project.cards.length);chrome();cardList();save();}));
   box.querySelectorAll('[data-frcat]').forEach(s=>s.addEventListener('change',()=>{
     project.frame.label=s.value;render();}));
+  box.querySelectorAll('[data-role]').forEach(s=>s.addEventListener('change',()=>{
+    const M=project.theme.roleMap=project.theme.roleMap||{};
+    if(s.value)M[s.dataset.role]=s.value; else delete M[s.dataset.role];
+    render();}));
+  box.querySelectorAll('[data-rolehex]').forEach(inp=>{
+    inp.addEventListener('input',()=>{                       // 끄는 동안 미리보기
+      const M=project.theme.roleMap=project.theme.roleMap||{};
+      M[inp.dataset.rolehex]=inp.value;
+      paint($('#canvas'),card(),cur,project.cards.length);cardList();save();});
+    inp.addEventListener('change',()=>{                      // 놓으면 확정하고 패널까지 새로
+      const M=project.theme.roleMap=project.theme.roleMap||{};
+      M[inp.dataset.rolehex]=inp.value; render();});
+  });
   box.querySelectorAll('[data-th]').forEach(inp=>inp.addEventListener('change',()=>{project.theme[inp.dataset.th]=inp.value;render();}));
   box.querySelectorAll('[data-seg]').forEach(seg=>seg.addEventListener('click',ev=>{
     const v=ev.target.dataset.v; if(v===undefined)return; const key=seg.dataset.seg, e=sel();
@@ -785,6 +826,7 @@ function act(a){
   if(a==='pickbg')pickImg(d=>{card().bg.src=d;card().bg.type='image';render();});
   if(a==='picklogo')pickImg(d=>{project.frame.logo=d;render();});
   if(a==='logoreset'){project.frame.logo='';render();toast('기본 ARETE 로고로 되돌렸어요');}
+  if(a==='rolesauto'){project.theme.roleMap={};render();toast('색 배정을 자동으로 되돌렸어요');}
 }
 function pickImg(cb){const f=$('#filePick');f.value='';
   f.onchange=()=>{const file=f.files[0];if(!file)return;const r=new FileReader();
