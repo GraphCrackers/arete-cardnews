@@ -258,6 +258,11 @@ const stack=f=>`'${f}',${FALLBACK}`;
 /* ============ 로고 ============
    assets/logo-arete.png 는 **알파 마스크**다 — 모양만 있고 색은 없다.
    그래서 팔레트 색을 입혀 쓴다. 색깔별로 한 번만 만들어 캐시한다. */
+/* 카드뉴스 카테고리 5종 — 노션 「인스타그램 카드뉴스 운영 가이드」 기준.
+   카드에는 이모지 없이 이름만 들어간다(1편 10장이 그랬다). 이모지는 고를 때 알아보기 쉬우라고 붙였다 */
+const CATS=[['칼럼','📰','학생·학부모'],['진로·학과','🧭','학생'],['입시·공부','📚','학생'],
+            ['수업·개념','💡','학생·학부모'],['도서','📖','학생']];
+
 const LOGO_SRC='assets/logo-arete.png';
 const LOGO_DEF={x:80,b:56,h:78,role:'ink',op:.28};
 let LOGO_IMG=null;
@@ -659,7 +664,14 @@ function cardPanel(){
     <p class="hint" style="margin-top:5px">폰트 파일들과 함께 저장소 assets/fonts/ 에 올리면, 팀원은 폰트를 따로 불러오지 않아도 같은 글꼴로 보입니다.</p></div>`;
 
   h+=`<div class="divider"></div><h3 style="padding:0 0 6px">공통 프레임</h3>`;
-  h+=`<div class="field"><label>왼쪽 라벨</label><input type="text" data-fr="label" value="${esc(fr.label)}"></div>`;
+  // 카테고리 5종은 노션 「인스타그램 카드뉴스 운영 가이드」의 분류다. 그 밖의 말도 쓸 수 있다
+  const isCat=CATS.some(([n])=>n===fr.label);
+  h+=`<div class="field"><label>왼쪽 라벨 · 카테고리</label><select data-frcat>
+    ${isCat?'':`<option value="${esc(fr.label)}" selected>${esc(fr.label)||'(비어 있음)'}</option>`}
+    ${CATS.map(([n,em,who])=>`<option value="${esc(n)}" ${fr.label===n?'selected':''}>${em} ${n} — ${who}</option>`).join('')}
+    </select></div>`;
+  h+=`<div class="field"><label>직접 입력</label>
+    <input type="text" data-fr="label" value="${esc(fr.label)}" placeholder="예: 칼럼"></div>`;
   h+=`<div class="row"><div class="field"><div class="seg" data-seg="header">
     <button data-v="1" class="${fr.header?'on':''}">머리말</button><button data-v="0" class="${fr.header?'':'on'}">없음</button></div></div>
     <div class="field"><div class="seg" data-seg="footer">
@@ -729,6 +741,8 @@ function bind(){
     else if(/^logo(X|B|H)$/.test(k))project.frame[k]=+inp.value||0;    // 숫자로 저장한다
     else project.frame[k]=inp.value;
     paint($('#canvas'),card(),cur,project.cards.length);chrome();cardList();save();}));
+  box.querySelectorAll('[data-frcat]').forEach(s=>s.addEventListener('change',()=>{
+    project.frame.label=s.value;render();}));
   box.querySelectorAll('[data-th]').forEach(inp=>inp.addEventListener('change',()=>{project.theme[inp.dataset.th]=inp.value;render();}));
   box.querySelectorAll('[data-seg]').forEach(seg=>seg.addEventListener('click',ev=>{
     const v=ev.target.dataset.v; if(v===undefined)return; const key=seg.dataset.seg, e=sel();
