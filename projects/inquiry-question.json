@@ -20,18 +20,19 @@
         "h": "#CBEE88"
       },
       {
-        "n": "green gold",
-        "h": "#ABA76F"
+        "n": "tangerine",
+        "h": "#FF9855"
       }
     ],
     "dark": false,
-    "font": "Pretendard"
+    "font": "SUIT"
   },
   "frame": {
-    "label": "탐구 노트",
+    "label": "입시·공부",
     "header": true,
     "footer": true,
-    "logo": ""
+    "logo": "",
+    "logoOp": 0.4
   },
   "cards": [
     {
@@ -52,7 +53,7 @@
           "w": 920,
           "h": 480,
           "opacity": 1,
-          "text": "==두 시간째==\n빈 화면",
+          "text": "==탐구 주제==\n아예 모르겠어요..",
           "size": 128,
           "weight": 900,
           "lh": 1.18,
