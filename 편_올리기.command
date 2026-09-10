@@ -40,6 +40,16 @@ _, src, data = cands[0]
 name = data.get("name", "제목 없음")
 pid  = os.path.splitext(os.path.basename(src))[0]
 
+# 사파리는 같은 이름이 이미 있으면 뒤에 -2, -3 을 붙인다.
+# 그대로 두면 resilience-2.json 이라는 엉뚱한 편이 생긴다. 떼어낸다.
+import re
+base = re.sub(r"[-_ ]\d+$", "", pid)
+if base != pid and os.path.exists(os.path.join(REPO, "projects", base + ".json")):
+    print(f"파일 이름이 {pid} 인데 -숫자는 사파리가 붙인 것입니다.")
+    print(f"기존 편 {base} 를 고친 것으로 봅니다.")
+    print()
+    pid = base
+
 print(f"찾았습니다 : {os.path.basename(src)}")
 print(f"편 이름    : {name}")
 print(f"카드       : {len(data['cards'])}장")
