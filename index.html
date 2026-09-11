@@ -15,13 +15,28 @@
 html{height:100%}
 body{height:100dvh;min-height:520px;margin:0}
 body{font-family:var(--ui);background:var(--stage);color:var(--ink);font-size:13px;
-  overflow:hidden;display:grid;grid-template-rows:auto auto 1fr}
+  overflow:hidden;display:grid;grid-template-rows:auto auto auto minmax(0,1fr)}
 button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 button{cursor:pointer}
 ::-webkit-scrollbar{width:9px;height:9px}
 ::-webkit-scrollbar-thumb{background:#454136;border-radius:9px}
-.topbar{display:flex;align-items:center;gap:9px;padding:9px 14px;background:var(--panel);
+.topbar{grid-row:1;display:flex;flex-direction:column;gap:8px;padding:12px 16px 8px;background:var(--panel);
   border-bottom:1px solid var(--line)}
+.topbar-main,.topbar-tools{display:flex;align-items:center;gap:10px;width:100%;flex-wrap:wrap}
+.topbar-main .primary-actions{display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.topbar-main .btn{padding:10px 16px;min-height:40px;font-size:14px;font-weight:650;white-space:nowrap}
+.topbar-main #btnList{border-color:#726b5b;background:var(--panel2)}
+.topbar-main #btnPngAll{background:#eae6dd;color:#25231f;border-color:#eae6dd}
+.topbar-tools .btn{font-size:11px;padding:4px 7px;color:#aaa497;min-height:28px}
+.topbar-tools .backup-actions{display:flex;gap:2px;margin-left:auto;border-left:1px solid var(--line);padding-left:10px}
+.topbar-tools .backup-actions .btn{font-size:10px;color:var(--dim);border-color:transparent}
+.topbar-tools .btn:hover{color:var(--ink);background:var(--panel2)}
+.topbar .btn:disabled{opacity:.45;cursor:not-allowed}
+#bar{grid-row:2}
+#publishStatus{grid-row:3}
+@media(max-width:800px){.topbar-main .brand i{display:none}.topbar-main #projName{flex:1;min-width:120px;width:160px}
+  .topbar-main .primary-actions{width:100%;margin-left:0}.topbar-main .primary-actions .btn{flex:1;padding:8px 10px}
+  .topbar-tools{gap:4px}.topbar-tools .backup-actions{padding-left:4px}}
 .brand{font-weight:700;letter-spacing:.15em;font-size:12px;color:var(--sel)}
 .brand i{font-style:normal;color:var(--dim);font-weight:500;letter-spacing:.02em;margin-left:8px}
 #projName{background:transparent;border:1px solid transparent;border-radius:5px;padding:4px 7px;min-width:180px}
@@ -33,7 +48,7 @@ button{cursor:pointer}
 .btn.pri{background:var(--sel);border-color:var(--sel);color:#0f2019;font-weight:600}
 .btn.ghost{background:transparent}
 .btn:focus-visible,input:focus-visible{outline:2px solid var(--sel);outline-offset:1px}
-.wrap{display:grid;grid-template-columns:198px 1fr 286px;min-height:0}
+.wrap{grid-row:4;display:grid;grid-template-columns:198px 1fr 286px;min-height:0}
 .rail{background:var(--panel);display:flex;flex-direction:column;min-height:0}
 .rail.left{border-right:1px solid var(--line)}
 .rail.right{border-left:1px solid var(--line)}
@@ -138,18 +153,25 @@ input[type=range]{width:100%;accent-color:var(--sel)}
 </style>
 
 <div class="topbar">
+ <div class="topbar-main">
   <span class="brand">ARETE<i>카드뉴스 에디터</i></span>
-  <input id="projName" value="제목 없는 카드뉴스">
-  <span class="spacer"></span>
-  <button class="btn ghost" id="btnList">편 목록</button>
-  <button class="btn ghost" id="btnFonts">폰트 폴더 불러오기</button>
-  <button class="btn ghost" id="btnShare">공유 링크 복사</button>
-  <button class="btn ghost" id="btnImport">JSON 불러오기</button>
-  <button class="btn ghost" id="btnExportJson">JSON 내보내기</button>
+  <input id="projName" aria-label="카드뉴스 제목" value="제목 없는 카드뉴스">
+  <div class="primary-actions" role="group" aria-label="주요 작업">
+   <button class="btn" id="btnList">편 목록</button>
+   <button class="btn" id="btnPngAll">전체 PNG</button>
+   <button class="btn pri" id="btnPublish" disabled>사이트에 반영</button>
+  </div>
+ </div>
+ <div class="topbar-tools" role="group" aria-label="보조 작업">
   <button class="btn ghost" id="btnLogin">GitHub 로그인</button>
-  <button class="btn pri" id="btnPublish" disabled>사이트에 반영</button>
-  <button class="btn" id="btnPngOne">이 카드 PNG</button>
-  <button class="btn pri" id="btnPngAll">전체 PNG</button>
+  <button class="btn ghost" id="btnPngOne">이 카드 PNG</button>
+  <button class="btn ghost" id="btnShare">공유 링크 복사</button>
+  <button class="btn ghost" id="btnFonts">폰트 폴더 불러오기</button>
+  <div class="backup-actions" role="group" aria-label="JSON 백업">
+   <button class="btn ghost" id="btnImport" title="JSON 백업 파일 불러오기">JSON 불러오기</button>
+   <button class="btn ghost" id="btnExportJson" title="현재 작업을 JSON 파일로 백업">JSON 내보내기</button>
+  </div>
+ </div>
 </div>
 
 <div class="bar" id="bar" hidden></div>
