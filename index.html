@@ -146,11 +146,14 @@ input[type=range]{width:100%;accent-color:var(--sel)}
   <button class="btn ghost" id="btnShare">공유 링크 복사</button>
   <button class="btn ghost" id="btnImport">JSON 불러오기</button>
   <button class="btn ghost" id="btnExportJson">JSON 내보내기</button>
+  <button class="btn ghost" id="btnLogin">GitHub 로그인</button>
+  <button class="btn pri" id="btnPublish" disabled>사이트에 반영</button>
   <button class="btn" id="btnPngOne">이 카드 PNG</button>
   <button class="btn pri" id="btnPngAll">전체 PNG</button>
 </div>
 
 <div class="bar" id="bar" hidden></div>
+<div class="bar" id="publishStatus" role="status" aria-live="polite" hidden></div>
 
 <div class="wrap">
   <aside class="rail left">
@@ -962,21 +965,33 @@ $('#btnAddCard').onclick=()=>{project.cards.splice(cur+1,0,preset('blank'));cur+
 $('#projName').oninput=()=>{project.name=$('#projName').value;save();};
 
 /* ============ 프로젝트 식별 · 저장 · 불러오기 ============ */
-const PID=((new URLSearchParams(location.search).get('p')||'').match(/^[\w-]{1,60}$/)||[''])[0];
-const KEY='arete-cardnews:'+(PID||'_draft');
+let PID=((new URLSearchParams(location.search).get('p')||'').match(/^[\w-]{1,60}$/)||[''])[0];
+let KEY='arete-cardnews:'+(PID||'_draft');
+let baseSha=null, localBaseSha=null;
 let sT=null;
 function save(){clearTimeout(sT);sT=setTimeout(async()=>{
   const s=JSON.stringify(project);
-  try{ if(window.storage?.set)await window.storage.set(KEY,s); else localStorage.setItem(KEY,s);}catch{}
+  try{ if(window.storage?.set)await window.storage.set(KEY,s); else localStorage.setItem(KEY,s);
+    localStorage.setItem(KEY+':base',JSON.stringify(baseSha)); }catch{}
 },400);}
 async function readLocal(){
   try{let s=null;
+    try{localBaseSha=JSON.parse(localStorage.getItem(KEY+':base'));}catch{}
     if(window.storage?.get){const r=await window.storage.get(KEY);s=r?.value;}
     else s=localStorage.getItem(KEY);
     if(s){const p=JSON.parse(s); if(p.cards?.length)return p;}
   }catch{} return null;
 }
 async function getJSON(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw 0;return r.json();}
+async function projectFile(id){
+  const r=await fetch(`projects/${encodeURIComponent(id)}.json`,{cache:'no-store'});
+  if(!r.ok)throw Error('편을 불러오지 못했습니다.');
+  const bytes=new Uint8Array(await r.arrayBuffer());
+  const prefix=new TextEncoder().encode('blob '+bytes.length+'\0');
+  const all=new Uint8Array(prefix.length+bytes.length);all.set(prefix);all.set(bytes,prefix.length);
+  const hash=new Uint8Array(await crypto.subtle.digest('SHA-1',all));
+  return {project:JSON.parse(new TextDecoder().decode(bytes)),sha:[...hash].map(x=>x.toString(16).padStart(2,'0')).join('')};
+}
 function migrate(p){
   p.frame=p.frame||{label:'칼럼',header:true,footer:true,logo:''};
   p.size=p.size||{w:1080,h:1080};
@@ -1005,7 +1020,7 @@ async function load(){
   await initLogo();            // 로고가 준비된 뒤에 첫 렌더가 돌아야 한다
   const localP=await readLocal();
   let remoteP=null;
-  if(PID){ try{ const p=await getJSON(`projects/${PID}.json`); if(p.cards?.length)remoteP=p; }catch{} }
+  if(PID){ try{ const f=await projectFile(PID); if(f.project.cards?.length){remoteP=f.project;baseSha=f.sha;} }catch{} }
 
   if(remoteP){
     setProject(remoteP);
@@ -1013,9 +1028,10 @@ async function load(){
       <span class="spacer"></span>
       <button class="btn" id="barKeep">내 수정본 이어서 편집</button>
       <button class="btn ghost" id="barDrop">저장소 버전으로 계속</button>`);
-    $('#barKeep')?.addEventListener('click',()=>{setProject(localP);$('#bar').hidden=true;});
+    $('#barKeep')?.addEventListener('click',()=>{baseSha=localBaseSha;setProject(localP);$('#bar').hidden=true;});
     $('#barDrop')?.addEventListener('click',()=>{$('#bar').hidden=true;});
   } else if(localP){
+    baseSha=localBaseSha;
     setProject(localP);
     if(PID) showBar(`<b>projects/${PID}.json</b> 을 찾지 못해 이 브라우저에 남아 있던 작업을 열었어요.
       <span class="spacer"></span><button class="btn ghost" id="barX">닫기</button>`);
@@ -1038,7 +1054,7 @@ async function picker(manual){
   const el=$('#picker'); el.hidden=false;
   el.innerHTML=`<div class="pbox">
     <h2>${manual?'다른 편 열기':'어떤 카드뉴스를 열까요?'}</h2>
-    <p>${manual?'지금 작업은 이 브라우저에 자동으로 남습니다. 저장소에 반영하려면 <b>JSON 내보내기</b>를 누르세요.'
+    <p>${manual?'지금 작업은 이 브라우저에 자동으로 남습니다. 모두에게 공유하려면 <b>사이트에 반영</b>을 누르세요.'
                :'편집할 편을 고르세요. 주소창에 <code>?p=파일이름</code> 을 붙여도 바로 열립니다.'}</p>
     ${list.map(x=>{
       const on = PID && x.id===PID;
@@ -1061,5 +1077,65 @@ $('#btnShare').onclick=async()=>{
 
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');
   clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2400);}
+/* GitHub 로그인 · 게시. 로그인 세션은 탭 메모리에만 보관합니다. */
+const API='https://arete-cardnews-api.gang789gang.workers.dev';
+let session='',loginPopup=null,loginTimer=null,publishing=false,deployCheck=0;
+function publishMessage(message){const el=$('#publishStatus');el.hidden=false;el.textContent=message;}
+async function api(path,options={}){
+  const r=await fetch(API+path,{...options,headers:{'Content-Type':'application/json',
+    Authorization:'Bearer '+session,...options.headers}});
+  const data=await r.json();
+  if(!r.ok){if(r.status===401){session='';$('#btnLogin').textContent='GitHub 로그인';$('#btnPublish').disabled=true;}
+    throw Object.assign(Error(data.error||'서버 요청에 실패했습니다.'),{status:r.status});}
+  return data;
+}
+$('#btnLogin').onclick=()=>{
+  if(session){session='';$('#btnLogin').textContent='GitHub 로그인';$('#btnPublish').disabled=true;
+    publishMessage('로그아웃했습니다. 편집 내용은 이 브라우저에 남아 있습니다.');return;}
+  if(location.origin!=='https://graphcrackers.github.io'){
+    publishMessage('GitHub 로그인은 배포된 카드뉴스 사이트에서 사용할 수 있습니다.');return;}
+  if(loginPopup&&!loginPopup.closed){loginPopup.focus();return;}
+  loginPopup=window.open(API+'/auth/login','arete-github-login','popup,width=650,height=760');
+  if(!loginPopup){publishMessage('팝업이 차단됐습니다. 팝업을 허용한 뒤 다시 로그인해주세요.');return;}
+  publishMessage('GitHub 로그인 창에서 계정을 확인해주세요.');
+  clearInterval(loginTimer);
+  loginTimer=setInterval(()=>{if(loginPopup?.closed){clearInterval(loginTimer);loginPopup=null;
+    if(!session)publishMessage('로그인 창이 닫혔습니다. 완료하지 않았다면 다시 로그인해주세요.');}},800);
+};
+window.addEventListener('message',async event=>{
+  if(event.origin!==API||!loginPopup||event.source!==loginPopup||event.data?.type!=='arete-auth'||typeof event.data.session!=='string')return;
+  clearInterval(loginTimer);loginPopup=null;session=event.data.session;
+  try{const user=await api('/api/me');$('#btnLogin').textContent=user.login+' · 로그아웃';
+    $('#btnPublish').disabled=false;publishMessage('로그인됐습니다. 편집 후 ‘사이트에 반영’을 누르세요.');
+  }catch(e){session='';publishMessage(e.message);}
+});
+async function watchDeployment(id,sha,ticket){
+  for(let i=0;i<24;i++){
+    await new Promise(r=>setTimeout(r,5000));if(ticket!==deployCheck)return;
+    try{const f=await projectFile(id);if(f.sha===sha){publishMessage('사이트 반영 완료 — 팀원들이 새로고침하면 수정본을 볼 수 있습니다.');return;}}catch{}
+  }
+  if(ticket===deployCheck)publishMessage('GitHub 저장은 완료됐습니다. 사이트 배포 완료는 아직 확인되지 않았습니다. 잠시 후 새로고침하거나 GitHub Actions를 확인해주세요.');
+}
+$('#btnPublish').onclick=async()=>{
+  if(publishing||!session)return;
+  let id=PID;
+  if(!id){id=prompt('새 카드뉴스의 주소에 사용할 이름을 입력하세요. (영문·숫자·밑줄·하이픈, 최대 60자)','cardnews');
+    if(id===null)return;id=id.trim();}
+  if(!/^[\w-]{1,60}$/.test(id)||id==='index'){publishMessage('편 이름은 영문·숫자·밑줄·하이픈으로 입력하세요. index는 사용할 수 없습니다.');return;}
+  // Capture a snapshot: edits made while the request is in flight remain local.
+  project.name=$('#projName').value.trim()||'제목 없는 카드뉴스';
+  const snapshot=JSON.parse(JSON.stringify(project));
+  if(!confirm('“'+snapshot.name+'”을 사이트에 게시할까요? 링크를 여는 모든 사람에게 공개됩니다.'))return;
+  publishing=true;$('#btnPublish').disabled=true;$('#btnPublish').textContent='반영 중…';
+  const ticket=++deployCheck;publishMessage('GitHub에 저장하는 중…');
+  try{
+    const result=await api('/api/publish',{method:'POST',body:JSON.stringify({id,project:snapshot,expectedSha:baseSha})});
+    baseSha=result.sha;
+    if(!PID){PID=id;KEY='arete-cardnews:'+id;const u=new URL(location.href);u.searchParams.set('p',id);history.replaceState(null,'',u);}
+    save();publishMessage('GitHub 저장 완료 — 사이트 배포를 기다리고 있습니다.');
+    watchDeployment(id,result.sha,ticket);
+  }catch(e){publishMessage(e.message+(e.status===409?' 현재 작업은 JSON 내보내기로 백업한 뒤 최신 버전을 다시 열어주세요.':''));}
+  finally{publishing=false;$('#btnPublish').disabled=!session;$('#btnPublish').textContent='사이트에 반영';}
+};
 load();
 </script>
