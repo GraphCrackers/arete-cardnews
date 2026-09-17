@@ -42,6 +42,8 @@ button{cursor:pointer}
 #projName{background:transparent;border:1px solid transparent;border-radius:5px;padding:4px 7px;min-width:180px}
 #projName:hover{border-color:var(--line)}
 #projName:focus{outline:none;border-color:var(--sel);background:var(--panel2)}
+.publish-meta{font-size:11px;line-height:1.6;color:var(--dim);display:flex;gap:4px 12px;flex-wrap:wrap}
+.publish-meta strong{color:var(--ink);font-weight:500}
 .spacer{flex:1}
 .btn{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 11px}
 .btn:hover{border-color:#5b5648}
@@ -158,6 +160,7 @@ input[type=range]{width:100%;accent-color:var(--sel)}
  <div class="topbar-main">
   <span class="brand">ARETE<i>카드뉴스 에디터</i></span>
   <input id="projName" aria-label="카드뉴스 제목" value="제목 없는 카드뉴스">
+  <div class="publish-meta" id="publishMeta" role="status" aria-live="polite">게시 기록 확인 중…</div>
   <div class="primary-actions" role="group" aria-label="주요 작업">
    <button class="btn" id="btnList">편 목록</button>
    <button class="btn" id="btnPngAll">전체 PNG</button>
@@ -1130,6 +1133,7 @@ function setProject(p){
 function showBar(html){const b=$('#bar');b.hidden=false;b.innerHTML=html;}
 
 async function load(){
+  updatePublishMeta(PID);
   // file:// 로 열면 브라우저가 같은 폴더의 파일도 fetch 로 못 읽는다(보안 정책).
   // 그러면 글꼴도 편 목록도 조용히 실패해 「빈 편집기 + 엉뚱한 글꼴」이 된다.
   // 조용히 망가지느니 왜 그런지 알려준다.
@@ -1203,6 +1207,31 @@ function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');
   clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2400);}
 /* GitHub 로그인 · 게시. 로그인 세션은 탭 메모리에만 보관합니다. */
 const API='https://arete-cardnews-api.gang789gang.workers.dev';
+let metaRequest=0;
+async function updatePublishMeta(id,commitSha){
+  const request=++metaRequest,el=$('#publishMeta');
+  if(!id){el.textContent='아직 게시하지 않은 편';return;}
+  el.textContent='게시 기록 확인 중…';
+  try{
+    const root='https://api.github.com/repos/GraphCrackers/arete-cardnews/commits';
+    const url=commitSha?root+'/'+encodeURIComponent(commitSha):root+'?'+new URLSearchParams({path:'projects/'+id+'.json',sha:'main',per_page:'1'});
+    const r=await fetch(url,{cache:'no-store',headers:{Accept:'application/vnd.github+json'}});
+    if(!r.ok)throw Error();
+    const data=await r.json(),entry=commitSha?data:data[0];
+    if(request!==metaRequest)return;
+    if(!entry){el.textContent='게시 기록 없음';return;}
+    const who=entry.author?.login||entry.commit?.author?.name||'확인 불가';
+    const date=new Date(entry.commit?.committer?.date||entry.commit?.author?.date);
+    if(!Number.isFinite(date.getTime()))throw Error();
+    const time=new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'long',day:'numeric',hour:'numeric',minute:'2-digit'}).format(date);
+    el.replaceChildren();
+    for(const [label,value] of [['최종 수정자',who],['게시 시각',time+' (한국 시간)']]){
+      const span=document.createElement('span'),strong=document.createElement('strong');
+      span.append(label+' · ');strong.textContent=value;span.append(strong);el.append(span);
+    }
+    el.title='이 편 파일의 마지막 GitHub 저장 기록 기준입니다. 게시 후 사이트 배포까지는 잠시 걸릴 수 있습니다.';
+  }catch{if(request===metaRequest)el.textContent='게시 기록을 불러오지 못했습니다.';}
+}
 let session='',loginPopup=null,loginTimer=null,publishing=false,deployCheck=0;
 function publishMessage(message){const el=$('#publishStatus');el.hidden=false;el.textContent=message;}
 async function api(path,options={}){
@@ -1255,6 +1284,7 @@ $('#btnPublish').onclick=async()=>{
   try{
     const result=await api('/api/publish',{method:'POST',body:JSON.stringify({id,project:snapshot,expectedSha:baseSha})});
     baseSha=result.sha;
+    updatePublishMeta(id,result.commit);
     if(!PID){PID=id;KEY='arete-cardnews:'+id;const u=new URL(location.href);u.searchParams.set('p',id);history.replaceState(null,'',u);}
     save();publishMessage('GitHub 저장 완료 — 사이트 배포를 기다리고 있습니다.');
     watchDeployment(id,result.sha,ticket);
