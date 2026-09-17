@@ -163,6 +163,8 @@ input[type=range]{width:100%;accent-color:var(--sel)}
   </div>
  </div>
  <div class="topbar-tools" role="group" aria-label="보조 작업">
+  <button class="btn ghost" id="btnUndo" disabled title="실행 취소 (Ctrl/⌘+Z)">↶ 실행 취소</button>
+  <button class="btn ghost" id="btnRedo" disabled title="다시 실행 (Ctrl/⌘+Shift+Z, Ctrl+Y)">↷ 다시 실행</button>
   <button class="btn ghost" id="btnLogin">GitHub 로그인</button>
   <button class="btn ghost" id="btnPngOne">이 카드 PNG</button>
   <button class="btn ghost" id="btnShare">공유 링크 복사</button>
@@ -918,12 +920,19 @@ $('#canvas').addEventListener('dblclick',ev=>{
   t.contentEditable='true'; t.focus();
   const r=document.createRange();r.selectNodeContents(t);
   getSelection().removeAllRanges();getSelection().addRange(r);
+  t.oninput=()=>{e.text=t.innerText.replace(/\n$/,'');save();};
   t.onblur=()=>{e.text=t.innerText.replace(/\n$/,'');t.contentEditable='false';render();};
   t.onkeydown=k=>{if(k.key==='Escape')t.blur();k.stopPropagation();};
 });
 addEventListener('keydown',ev=>{
   if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
   if(document.activeElement.isContentEditable)return;
+  if((ev.ctrlKey||ev.metaKey)&&!ev.altKey){
+    const key=ev.key.toLowerCase();
+    if(key==='z'||(key==='y'&&ev.ctrlKey)){
+      ev.preventDefault();undoRedo(key==='y'||ev.shiftKey);return;
+    }
+  }
   const e=sel(); if(!e)return; const st=ev.shiftKey?10:1;
   if((ev.metaKey||ev.ctrlKey)&&e.type==='text'&&(ev.key==='ArrowUp'||ev.key==='ArrowDown')){
     ev.preventDefault(); e.size=Math.max(8,e.size+(ev.key==='ArrowUp'?1:-1)*(ev.shiftKey?10:2));
@@ -990,8 +999,56 @@ $('#projName').oninput=()=>{project.name=$('#projName').value;save();};
 let PID=((new URLSearchParams(location.search).get('p')||'').match(/^[\w-]{1,60}$/)||[''])[0];
 let KEY='arete-cardnews:'+(PID||'_draft');
 let baseSha=null, localBaseSha=null;
+/* 실행 취소: 문서만 복원합니다. 로그인·게시 기준 SHA는 되돌리지 않습니다. */
+const undoStack=[],redoStack=[];
+let historyState=null,historyGroup=null,historyRestoring=false;
+const HISTORY_LIMIT=60,HISTORY_BYTES=24*1024*1024;
+function historySnapshot(){return {data:JSON.stringify(project),cur,selId};}
+function historyButtons(){
+  $('#btnUndo').disabled=!undoStack.length;
+  $('#btnRedo').disabled=!redoStack.length;
+}
+function trimHistory(stack){
+  let bytes=stack.reduce((n,s)=>n+s.data.length*2,0);
+  while(stack.length>HISTORY_LIMIT||(stack.length>1&&bytes>HISTORY_BYTES))bytes-=stack.shift().data.length*2;
+}
+function resetHistory(){
+  undoStack.length=redoStack.length=0;historyGroup=null;
+  historyState=historySnapshot();historyButtons();
+}
+function recordHistory(){
+  if(historyRestoring)return;
+  const next=historySnapshot();
+  if(!historyState){historyState=next;historyButtons();return;}
+  if(next.data===historyState.data){historyState.cur=cur;historyState.selId=selId;return;}
+  const active=document.activeElement;
+  // One text/slider editing session is one step. Separate clicks and drags remain separate steps.
+  const group=(active?.matches('input,textarea')||active?.isContentEditable)?active:null;
+  if(!group||group!==historyGroup){undoStack.push(historyState);trimHistory(undoStack);}
+  historyGroup=group;historyState=next;redoStack.length=0;historyButtons();
+}
+document.addEventListener('focusout',()=>{historyGroup=null;});
+function undoRedo(redo=false){
+  // Commit an open inline text editor before choosing the history entry.
+  if(document.activeElement?.isContentEditable)document.activeElement.blur();
+  recordHistory();
+  const from=redo?redoStack:undoStack,to=redo?undoStack:redoStack;
+  if(!from.length)return;
+  to.push(historySnapshot());trimHistory(to);
+  const state=from.pop();historyRestoring=true;
+  drag=null;guides=[];project=JSON.parse(state.data);
+  cur=Math.max(0,Math.min(state.cur,project.cards.length-1));
+  selId=project.cards[cur].els.some(e=>e.id===state.selId)?state.selId:null;
+  applySize();$('#projName').value=project.name||'';
+  render();historyRestoring=false;historyState=historySnapshot();historyGroup=null;historyButtons();
+}
+for(const [id,redo] of [['btnUndo',false],['btnRedo',true]]){
+  // Keep focus until undoRedo commits the inline text, even when the button is clicked.
+  $('#'+id).addEventListener('pointerdown',ev=>ev.preventDefault());
+  $('#'+id).onclick=()=>undoRedo(redo);
+}
 let sT=null;
-function save(){clearTimeout(sT);sT=setTimeout(async()=>{
+function save(){recordHistory();clearTimeout(sT);sT=setTimeout(async()=>{
   const s=JSON.stringify(project);
   try{ if(window.storage?.set)await window.storage.set(KEY,s); else localStorage.setItem(KEY,s);
     localStorage.setItem(KEY+':base',JSON.stringify(baseSha)); }catch{}
@@ -1023,6 +1080,7 @@ function migrate(p){
 function setProject(p){
   project=migrate(p); applySize();
   $('#projName').value=project.name||'';
+  resetHistory();
   render();
 }
 function showBar(html){const b=$('#bar');b.hidden=false;b.innerHTML=html;}
