@@ -88,6 +88,8 @@ button{cursor:pointer}
 .hdl{position:absolute;width:12px;height:12px;background:#fff;border:2px solid var(--sel);
   border-radius:3px;pointer-events:auto}
 .guide{position:absolute;background:var(--warn)}
+.guide.gap{background:var(--sel)}
+.guide-label{position:absolute;padding:3px 6px;background:#142c25;color:#b7ffe8;border:1px solid var(--sel);border-radius:4px;font:12px/1.2 sans-serif;white-space:nowrap;transform:translate(-50%,-50%);pointer-events:none}
 .safe{position:absolute;border:1px dashed rgba(91,200,175,.45)}
 .field{margin:0 0 9px}
 .field label{display:block;font-size:11px;color:var(--dim);margin-bottom:3px}
@@ -902,14 +904,56 @@ $('#canvas').addEventListener('pointermove',ev=>{
   const e=sel(); if(e){e.x=Math.round(e.x);e.y=Math.round(e.y);e.w=Math.round(e.w);e.h=Math.round(e.h);}
   render();}));
 function snap(e,off){
-  guides=[]; if(off)return; const TOL=9;
-  const t=[{v:(W-e.w)/2,a:'x',l:W/2},{v:80,a:'x',l:80},{v:W-80-e.w,a:'x',l:W-80},
-    {v:(H-e.h)/2,a:'y',l:H/2},{v:150,a:'y',l:150},{v:H-80-e.h,a:'y',l:H-80}];
-  for(const g of t)if(Math.abs(e[g.a]-g.v)<TOL){e[g.a]=g.v;guides.push(g);}
+  guides=[]; if(off)return;
+  const tolerance=Math.min(16,6/Math.max(scale,.1));
+  const others=card().els.filter(o=>o.id!==e.id);
+  for(const [a,size,cross,crossSize,total,start,end] of [
+    ['x','w','y','h',W,80,W-80],['y','h','x','w',H,150,H-80]]){
+    const candidates=[];
+    const add=(v,marks,priority=0)=>{const distance=Math.abs(e[a]-v);
+      if(distance<=tolerance)candidates.push({v,marks,priority,distance});};
+    add((total-e[size])/2,[{a,l:total/2}],2);
+    add(start,[{a,l:start}],2);add(end-e[size],[{a,l:end}],2);
+    // Compare each edge and centre with every other element, not only the canvas.
+    for(const o of others)for(const target of [o[a],o[a]+o[size]/2,o[a]+o[size]]){
+      for(const offset of [0,e[size]/2,e[size]])add(target-offset,[{a,l:target}],1);
+    }
+    // Only compare spacing in the same row/column. Adjacent references avoid distant-pair noise.
+    const lane=others.filter(o=>Math.min(e[cross]+e[crossSize],o[cross]+o[crossSize])>
+      Math.max(e[cross],o[cross])).sort((u,v)=>u[a]-v[a]);
+    const gap=(from,to,line)=>({a,from,to,line,gap:true});
+    for(let i=0;i<lane.length-1;i++){
+      const left=lane[i],right=lane[i+1],leftEnd=left[a]+left[size],rightStart=right[a];
+      const space=rightStart-leftEnd;
+      if(space<0)continue;
+      const line=Math.min(e[cross],left[cross],right[cross])-18;
+      if(space>=e[size]){
+        const half=(space-e[size])/2,v=leftEnd+half;
+        add(v,[gap(leftEnd,v,line),gap(v+e[size],rightStart,line)]);
+      }
+      const before=left[a]-space-e[size],after=right[a]+right[size]+space;
+      if(before>=0)add(before,[gap(before+e[size],left[a],line),gap(leftEnd,rightStart,line)]);
+      if(after+e[size]<=total)add(after,[gap(leftEnd,rightStart,line),gap(right[a]+right[size],after,line)]);
+    }
+    candidates.sort((u,v)=>u.distance-v.distance||u.priority-v.priority);
+    if(candidates.length){const best=candidates[0];e[a]=best.v;guides.push(...best.marks);}
+  }
 }
 function drawGuides(){
   const ch=$('#canvas').querySelector('.chrome'); if(!ch)return;
   for(const g of guides){const d=document.createElement('div');d.className='guide';
+    if(g.gap){
+      d.classList.add('gap');
+      d.style.cssText=g.a==='x'?`left:${g.from}px;top:${g.line}px;width:${g.to-g.from}px;height:2px`:
+        `top:${g.from}px;left:${g.line}px;height:${g.to-g.from}px;width:2px`;
+      ch.appendChild(d);
+      for(const pos of [g.from,g.to]){const tick=document.createElement('div');tick.className='guide gap';
+        tick.style.cssText=g.a==='x'?`left:${pos}px;top:${g.line-5}px;width:2px;height:12px`:
+          `top:${pos}px;left:${g.line-5}px;height:2px;width:12px`;ch.appendChild(tick);}
+      const label=document.createElement('div');label.className='guide-label';label.textContent=Math.round(g.to-g.from)+' px';
+      label.style.left=(g.a==='x'?(g.from+g.to)/2:g.line)+'px';
+      label.style.top=(g.a==='y'?(g.from+g.to)/2:g.line)+'px';ch.appendChild(label);continue;
+    }
     d.style.cssText=g.a==='x'?`left:${g.l}px;top:0;width:1.5px;height:100%`:`top:${g.l}px;left:0;height:1.5px;width:100%`;
     ch.appendChild(d);}
 }
