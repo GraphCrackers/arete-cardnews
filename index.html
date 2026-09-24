@@ -1243,7 +1243,7 @@ async function api(path,options={}){
 $('#btnLogin').onclick=()=>{
   if(session){session='';$('#btnLogin').textContent='GitHub 로그인';$('#btnPublish').disabled=true;
     publishMessage('로그아웃했습니다. 편집 내용은 이 브라우저에 남아 있습니다.');return;}
-  if(location.origin!=='https://graphcrackers.github.io'){
+  if(location.origin!=='https://graphcrackers.com'){
     publishMessage('GitHub 로그인은 배포된 카드뉴스 사이트에서 사용할 수 있습니다.');return;}
   if(loginPopup&&!loginPopup.closed){loginPopup.focus();return;}
   loginPopup=window.open(API+'/auth/login','arete-github-login','popup,width=650,height=760');

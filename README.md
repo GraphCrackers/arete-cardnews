@@ -2,7 +2,7 @@
 
 카드뉴스의 글·사진·색상을 수정하고, 팀원에게 공유하거나 이미지로 저장하는 도구입니다.
 
-👉 **[카드뉴스 편집기 열기](https://graphcrackers.github.io/arete-cardnews/)**
+👉 **[카드뉴스 편집기 열기](https://graphcrackers.com/arete-cardnews/)**
 
 > **시작하기 전에 꼭!**
 >

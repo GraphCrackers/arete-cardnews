@@ -1,5 +1,5 @@
 // Cloudflare Worker. Secrets belong in Cloudflare, never in this file.
-const SITE = 'https://graphcrackers.github.io';
+const SITE = 'https://graphcrackers.com';
 const HOME = SITE + '/arete-cardnews/';
 const REPO = '/repos/GraphCrackers/arete-cardnews';
 const enc = new TextEncoder();
