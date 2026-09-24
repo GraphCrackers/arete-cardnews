@@ -1231,17 +1231,27 @@ async function updatePublishMeta(id,commitSha){
   }catch{if(request===metaRequest)el.textContent='게시 기록을 불러오지 못했습니다.';}
 }
 let session='',loginPopup=null,loginTimer=null,publishing=false,deployCheck=0;
+// 편 목록에서 다른 편을 열면 페이지가 새로 뜬다. 탭을 닫기 전까지는 로그인을 유지한다.
+const SESSION_KEY='arete-cardnews:session';
+function logout(){session='';try{sessionStorage.removeItem(SESSION_KEY);}catch{}
+  $('#btnLogin').textContent='GitHub 로그인';$('#btnPublish').disabled=true;}
+async function login(s,message){
+  session=s;try{sessionStorage.setItem(SESSION_KEY,s);}catch{}
+  try{const user=await api('/api/me');$('#btnLogin').textContent=user.login+' · 로그아웃';
+    $('#btnPublish').disabled=false;if(message)publishMessage(message);
+  }catch(e){logout();publishMessage(e.message);}
+}
 function publishMessage(message){const el=$('#publishStatus');el.hidden=false;el.textContent=message;}
 async function api(path,options={}){
   const r=await fetch(API+path,{...options,headers:{'Content-Type':'application/json',
     Authorization:'Bearer '+session,...options.headers}});
   const data=await r.json();
-  if(!r.ok){if(r.status===401){session='';$('#btnLogin').textContent='GitHub 로그인';$('#btnPublish').disabled=true;}
+  if(!r.ok){if(r.status===401)logout();
     throw Object.assign(Error(data.error||'서버 요청에 실패했습니다.'),{status:r.status});}
   return data;
 }
 $('#btnLogin').onclick=()=>{
-  if(session){session='';$('#btnLogin').textContent='GitHub 로그인';$('#btnPublish').disabled=true;
+  if(session){logout();
     publishMessage('로그아웃했습니다. 편집 내용은 이 브라우저에 남아 있습니다.');return;}
   if(location.origin!=='https://graphcrackers.com'){
     publishMessage('GitHub 로그인은 배포된 카드뉴스 사이트에서 사용할 수 있습니다.');return;}
@@ -1255,11 +1265,10 @@ $('#btnLogin').onclick=()=>{
 };
 window.addEventListener('message',async event=>{
   if(event.origin!==API||!loginPopup||event.source!==loginPopup||event.data?.type!=='arete-auth'||typeof event.data.session!=='string')return;
-  clearInterval(loginTimer);loginPopup=null;session=event.data.session;
-  try{const user=await api('/api/me');$('#btnLogin').textContent=user.login+' · 로그아웃';
-    $('#btnPublish').disabled=false;publishMessage('로그인됐습니다. 편집 후 ‘사이트에 반영’을 누르세요.');
-  }catch(e){session='';publishMessage(e.message);}
+  clearInterval(loginTimer);loginPopup=null;
+  login(event.data.session,'로그인됐습니다. 편집 후 ‘사이트에 반영’을 누르세요.');
 });
+try{const saved=sessionStorage.getItem(SESSION_KEY);if(saved)login(saved);}catch{}
 async function watchDeployment(id,sha,ticket){
   for(let i=0;i<24;i++){
     await new Promise(r=>setTimeout(r,5000));if(ticket!==deployCheck)return;
