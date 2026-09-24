@@ -10,6 +10,7 @@ const b64 = bytes => { let s = ''; for (const b of bytes) s += String.fromCharCo
 const un64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 const url64 = bytes => b64(bytes).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const random = () => url64(crypto.getRandomValues(new Uint8Array(32)));
+const KEEP = 30 * 24 * 3600 * 1000; // 로그인 유지 상한. 넘으면 다시 로그인
 async function key(env) {
   if (!env.GITHUB_CLIENT_SECRET || !env.GITHUB_CLIENT_ID) fail(503, 'GitHub 연결 설정이 필요합니다.');
   const hash = await crypto.subtle.digest('SHA-256', enc.encode('arete-session-v1:' + env.GITHUB_CLIENT_SECRET));
@@ -25,9 +26,24 @@ async function unseal(value, env, kind) {
     const [iv, body] = value.split('.');
     const plain = await crypto.subtle.decrypt({name:'AES-GCM', iv:un64(iv)}, await key(env), un64(body));
     const data = JSON.parse(dec.decode(plain));
-    if (data.kind !== kind || data.exp < Date.now()) throw Error();
+    if (data.kind !== kind || (data.rexp || data.exp) < Date.now()) throw Error();
     return data;
   } catch { fail(401, '로그인이 만료됐습니다. 다시 로그인해주세요.'); }
+}
+// GitHub 사용자 토큰(8시간)과 갱신 토큰을 함께 봉인한다. 갱신 토큰이 없으면 만료 없는 토큰이다.
+function sessionOf(data) {
+  const now = Date.now();
+  const exp = data.expires_in ? now + data.expires_in * 1000 : now + KEEP;
+  const rexp = data.refresh_token ? now + Math.min((data.refresh_token_expires_in || 0) * 1000 || KEEP, KEEP) : exp;
+  return {kind:'session', token:data.access_token, refresh:data.refresh_token, exp:Math.min(exp, rexp), rexp};
+}
+async function oauthToken(params, env) {
+  const r = await fetch('https://github.com/login/oauth/access_token', {method:'POST',
+    headers:{Accept:'application/json', 'Content-Type':'application/json'},
+    body:JSON.stringify({client_id:env.GITHUB_CLIENT_ID, client_secret:env.GITHUB_CLIENT_SECRET, ...params})});
+  const data = await r.json();
+  if (!r.ok || !data.access_token) fail(401, 'GitHub 로그인이 필요합니다. 다시 로그인해주세요.');
+  return data;
 }
 async function github(path, token, method = 'GET', body) {
   const r = await fetch('https://api.github.com' + path, {
@@ -70,7 +86,7 @@ async function readBody(request) {
 function response(data, status = 200) {
   return new Response(JSON.stringify(data), {status, headers:{'Content-Type':'application/json; charset=utf-8'}});
 }
-async function route(request, env) {
+async function route(request, env, ctx) {
   const url = new URL(request.url);
   if (request.method === 'GET' && url.pathname === '/') return response({service:'ARETE Cardnews API', version:1});
   if (request.method === 'GET' && url.pathname === '/auth/login') {
@@ -88,17 +104,12 @@ async function route(request, env) {
     const flow = await unseal(decodeURIComponent(cookie?.split('=').slice(1).join('=') || ''), env, 'oauth');
     if (!url.searchParams.get('state') || flow.state !== url.searchParams.get('state')) fail(401, '로그인 요청이 일치하지 않습니다. 다시 시도해주세요.');
     if (!url.searchParams.get('code')) fail(401, 'GitHub 로그인이 취소됐습니다.');
-    const r = await fetch('https://github.com/login/oauth/access_token', {method:'POST',
-      headers:{Accept:'application/json', 'Content-Type':'application/json'},
-      body:JSON.stringify({client_id:env.GITHUB_CLIENT_ID, client_secret:env.GITHUB_CLIENT_SECRET,
-        code:url.searchParams.get('code'), code_verifier:flow.verifier, redirect_uri:url.origin+'/auth/callback'})});
-    const data = await r.json();
-    if (!r.ok || !data.access_token) fail(401, 'GitHub 로그인에 실패했습니다. 다시 시도해주세요.');
+    const data = await oauthToken({code:url.searchParams.get('code'), code_verifier:flow.verifier,
+      redirect_uri:url.origin+'/auth/callback'}, env);
     await access(data.access_token);
-    const session = await seal({kind:'session', token:data.access_token,
-      exp:Date.now()+Math.min(data.expires_in || 28800, 28800)*1000}, env);
+    const session = await seal(sessionOf(data), env);
     const nonce = random();
-    // The GitHub token is encrypted; the browser keeps only this short-lived session in memory.
+    // The GitHub token is encrypted; the browser keeps only this sealed session.
     const script = `if(window.opener){window.opener.postMessage(${JSON.stringify({type:'arete-auth', session})},${JSON.stringify(SITE)});window.close();}`;
     return new Response('<!doctype html><meta charset="utf-8"><title>ARETE 로그인</title><p>로그인됐습니다. 카드뉴스 편집기로 돌아가세요.</p><a href="'+HOME+'">편집기 열기</a><script nonce="'+nonce+'">'+script+'</script>',
       {headers:{'Content-Type':'text/html; charset=utf-8', 'Content-Security-Policy':`default-src 'none'; script-src 'nonce-${nonce}'; base-uri 'none'; frame-ancestors 'none'`,
@@ -108,7 +119,13 @@ async function route(request, env) {
   if (request.headers.get('Origin') !== SITE) fail(403, '카드뉴스 편집기에서 요청해주세요.');
   const auth = request.headers.get('Authorization') || '';
   if (!auth.startsWith('Bearer ')) fail(401, '먼저 GitHub에 로그인해주세요.');
-  const {token} = await unseal(auth.slice(7), env, 'session');
+  let s = await unseal(auth.slice(7), env, 'session');
+  // 토큰이 곧 만료되면 갱신해서 새 세션을 X-Arete-Session 헤더로 돌려준다. 갱신 토큰은 한 번만 쓸 수 있다.
+  if (s.refresh && s.exp < Date.now() + 60000) {
+    s = sessionOf(await oauthToken({grant_type:'refresh_token', refresh_token:s.refresh}, env));
+    ctx.session = await seal(s, env);
+  }
+  const {token} = s;
   const repo = await access(token);
   if (request.method === 'GET' && url.pathname === '/api/me') {
     const user = await github('/user', token);
@@ -152,12 +169,12 @@ async function route(request, env) {
 }
 export default {
   async fetch(request, env) {
-    let result;
+    let result; const ctx = {};
     try {
       if (request.method === 'OPTIONS') {
         if (request.headers.get('Origin') !== SITE) fail(403, '허용되지 않은 요청입니다.');
         result = new Response(null, {status:204});
-      } else result = await route(request, env);
+      } else result = await route(request, env, ctx);
     } catch (e) { result = response({error:e.status ? e.message : '처리 중 오류가 발생했습니다. 다시 시도해주세요.'}, e.status || 500); }
     const headers = new Headers(result.headers);
     headers.set('Cache-Control', 'no-store');
@@ -168,6 +185,8 @@ export default {
       headers.set('Vary', 'Origin');
       headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
       headers.set('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+      headers.set('Access-Control-Expose-Headers', 'X-Arete-Session');
+      if (ctx.session) headers.set('X-Arete-Session', ctx.session);
     }
     return new Response(result.body, {status:result.status, headers});
   }

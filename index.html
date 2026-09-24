@@ -1274,20 +1274,24 @@ async function updatePublishMeta(id,commitSha){
   }catch{if(request===metaRequest)el.textContent='게시 기록을 불러오지 못했습니다.';}
 }
 let session='',loginPopup=null,loginTimer=null,publishing=false,deployCheck=0;
-// 편을 바꾸거나 브라우저를 닫았다 켜도 로그인을 유지한다. 세션 자체는 로그인 후 최대 8시간이다.
+// 편을 바꾸거나 브라우저를 닫았다 켜도 로그인을 유지한다. 서버가 토큰을 갱신해 최대 30일까지 간다.
 const SESSION_KEY='arete-cardnews:session';
-function logout(){session='';try{localStorage.removeItem(SESSION_KEY);}catch{}
+function logout(){   // 다른 탭이 이미 갱신해 둔 세션은 지우지 않는다
+  try{if(localStorage.getItem(SESSION_KEY)===session)localStorage.removeItem(SESSION_KEY);}catch{}session='';
   $('#btnLogin').textContent='GitHub 로그인';$('#btnPublish').disabled=true;}
 async function login(s,message){
   session=s;try{localStorage.setItem(SESSION_KEY,s);}catch{}
   try{const user=await api('/api/me');$('#btnLogin').textContent=user.login+' · 로그아웃';
     $('#btnPublish').disabled=false;if(message)publishMessage(message);
-  }catch(e){logout();publishMessage(e.message);}
+  }catch(e){   // 401 은 api() 가 이미 로그아웃했다. 네트워크 오류 등은 저장된 로그인을 남겨 둔다
+    session='';$('#btnLogin').textContent='GitHub 로그인';$('#btnPublish').disabled=true;publishMessage(e.message);}
 }
 function publishMessage(message){const el=$('#publishStatus');el.hidden=false;el.textContent=message;}
 async function api(path,options={}){
   const r=await fetch(API+path,{...options,headers:{'Content-Type':'application/json',
     Authorization:'Bearer '+session,...options.headers}});
+  const fresh=r.headers.get('X-Arete-Session');   // 서버가 토큰을 갱신했으면 새 세션으로 바꿔 둔다
+  if(fresh&&session){session=fresh;try{localStorage.setItem(SESSION_KEY,fresh);}catch{}}
   const data=await r.json();
   if(!r.ok){if(r.status===401)logout();
     throw Object.assign(Error(data.error||'서버 요청에 실패했습니다.'),{status:r.status});}
