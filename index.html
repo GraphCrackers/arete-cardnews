@@ -361,6 +361,9 @@ function blank(){
 function applySize(){W=project.size.w;H=project.size.h;}
 const card=()=>project.cards[cur];
 const sel=()=>card().els.find(e=>e.id===selId)||null;
+// 시프트 클릭 묶음. selId 가 묶음 안에 있을 때만 유효하므로, selId 를 새 요소로 바꾸면 자동으로 단일 선택이 된다
+let multi=new Set(), clip=[];
+const selAll=()=>multi.has(selId)?card().els.filter(e=>multi.has(e.id)):(sel()?[sel()]:[]);
 
 /* ---- 팔레트 역할 배정 ---- */
 function roles(){
@@ -546,6 +549,8 @@ function chrome(){
   const ch=document.createElement('div'); ch.className='chrome';
   if(showSafe){const s=document.createElement('div');s.className='safe';
     s.style.cssText='left:80px;right:80px;top:80px;bottom:80px';ch.appendChild(s);}
+  for(const g of selAll())if(g.id!==selId){const b=document.createElement('div');b.className='selbox';
+    b.style.cssText=`left:${g.x}px;top:${g.y}px;width:${g.w}px;height:${g.h}px`;ch.appendChild(b);}
   const e=sel();
   if(e){const b=document.createElement('div');b.className='selbox';
     b.style.cssText=`left:${e.x}px;top:${e.y}px;width:${e.w}px;height:${e.h}px`;
@@ -845,9 +850,8 @@ function act(a){
     i.value=e.color||colorOf(e,roles());i.oninput=()=>{e.color=i.value;
       paint($('#canvas'),card(),cur,project.cards.length);chrome();save();};
     i.onchange=()=>render();i.click();}
-  if(a==='delel'&&e){card().els=card().els.filter(x=>x.id!==e.id);selId=null;render();}
-  if(a==='dupel'&&e){const n=JSON.parse(JSON.stringify(e));n.id=uid();n.x+=24;n.y+=24;
-    card().els.push(n);selId=n.id;render();}
+  if(a==='delel'&&e){const g=selAll();card().els=card().els.filter(x=>!g.includes(x));selId=null;render();}
+  if(a==='dupel'&&e)pasteEls(selAll());
   if(a==='fontman'){
     const b=new Blob([JSON.stringify([...new Set(loadedNames)].sort(),null,2)],{type:'application/json'});
     dl(URL.createObjectURL(b),'index.json');
@@ -857,6 +861,10 @@ function act(a){
   if(a==='picklogo')pickImg(d=>{project.frame.logo=d;render();});
   if(a==='logoreset'){project.frame.logo='';render();toast('기본 ARETE 로고로 되돌렸어요');}
   if(a==='rolesauto'){project.theme.roleMap={};render();toast('색 배정을 자동으로 되돌렸어요');}
+}
+function pasteEls(src){
+  const ns=src.map(x=>{const n=JSON.parse(JSON.stringify(x));n.id=uid();n.x+=24;n.y+=24;return n;});
+  card().els.push(...ns);multi=new Set(ns.map(n=>n.id));selId=ns.at(-1).id;render();
 }
 function pickImg(cb){const f=$('#filePick');f.value='';
   f.onchange=()=>{const file=f.files[0];if(!file)return;const r=new FileReader();
@@ -883,16 +891,24 @@ $('#canvas').addEventListener('pointerdown',ev=>{
   const cv=$('#canvas'), hd=ev.target.closest('.hdl'), ed=ev.target.closest('.el');
   if(!hd&&!ed){selId=null;chrome();inspector();return;}
   if(ed&&ed.querySelector('[contenteditable=true]'))return;
-  if(ed)selId=ed.dataset.id;
+  if(ed){const id=ed.dataset.id, g=selAll().map(x=>x.id);
+    if(ev.shiftKey){
+      multi=new Set(g);
+      if(multi.has(id)){multi.delete(id);selId=[...multi].at(-1)??null;chrome();inspector();return;}
+      multi.add(id);
+    }else if(!g.includes(id))multi=new Set([id]);   // 묶음 안을 누르면 묶음째 끈다
+    selId=id;}
   const e=sel(); if(!e)return;
   ev.preventDefault(); cv.setPointerCapture(ev.pointerId);
-  drag={mode:hd?'resize':'move',h:hd?.dataset.h,sx:ev.clientX,sy:ev.clientY,o:{x:e.x,y:e.y,w:e.w,h:e.h}};
+  drag={mode:hd?'resize':'move',h:hd?.dataset.h,sx:ev.clientX,sy:ev.clientY,o:{x:e.x,y:e.y,w:e.w,h:e.h},
+    rest:selAll().filter(x=>x!==e).map(x=>[x,x.x,x.y])};
   chrome(); inspector();
 });
 $('#canvas').addEventListener('pointermove',ev=>{
   if(!drag)return; const e=sel(); if(!e)return;
   const dx=(ev.clientX-drag.sx)/scale, dy=(ev.clientY-drag.sy)/scale, o=drag.o;
-  if(drag.mode==='move'){e.x=o.x+dx;e.y=o.y+dy;snap(e,ev.shiftKey);}
+  if(drag.mode==='move'){e.x=o.x+dx;e.y=o.y+dy;snap(e,ev.shiftKey);
+    for(const [x,ox,oy] of drag.rest){x.x=ox+e.x-o.x;x.y=oy+e.y-o.y;}}
   else{const k=drag.h;
     if(k.includes('e'))e.w=Math.max(16,o.w+dx);
     if(k.includes('s'))e.h=Math.max(16,o.h+dy);
@@ -902,12 +918,12 @@ $('#canvas').addEventListener('pointermove',ev=>{
 });
 ['pointerup','pointercancel'].forEach(t=>$('#canvas').addEventListener(t,()=>{
   if(!drag)return; drag=null; guides=[];
-  const e=sel(); if(e){e.x=Math.round(e.x);e.y=Math.round(e.y);e.w=Math.round(e.w);e.h=Math.round(e.h);}
+  for(const e of selAll()){e.x=Math.round(e.x);e.y=Math.round(e.y);e.w=Math.round(e.w);e.h=Math.round(e.h);}
   render();}));
 function snap(e,off){
   guides=[]; if(off)return;
   const tolerance=Math.min(16,6/Math.max(scale,.1));
-  const others=card().els.filter(o=>o.id!==e.id);
+  const g=selAll(), others=card().els.filter(o=>o!==e&&!g.includes(o));
   for(const [a,size,cross,crossSize,total,start,end] of [
     ['x','w','y','h',W,80,W-80],['y','h','x','w',H,150,H-80]]){
     const candidates=[];
@@ -977,13 +993,18 @@ addEventListener('keydown',ev=>{
     if(key==='z'||(key==='y'&&ev.ctrlKey)){
       ev.preventDefault();undoRedo(key==='y'||ev.shiftKey);return;
     }
+    if(key==='v'&&clip.length){ev.preventDefault();pasteEls(clip);clip=clip.map(x=>({...x,x:x.x+24,y:x.y+24}));return;}
+    if((key==='c'||key==='x'||key==='d')&&sel()){ev.preventDefault();
+      if(key==='d')return act('dupel');
+      clip=JSON.parse(JSON.stringify(selAll()));
+      if(key==='x')act('delel');return;}
   }
   const e=sel(); if(!e)return; const st=ev.shiftKey?10:1;
   if((ev.metaKey||ev.ctrlKey)&&e.type==='text'&&(ev.key==='ArrowUp'||ev.key==='ArrowDown')){
     ev.preventDefault(); e.size=Math.max(8,e.size+(ev.key==='ArrowUp'?1:-1)*(ev.shiftKey?10:2));
     paint($('#canvas'),card(),cur,project.cards.length);chrome();inspector();save();return;}
   const m={ArrowLeft:['x',-1],ArrowRight:['x',1],ArrowUp:['y',-1],ArrowDown:['y',1]};
-  if(m[ev.key]){ev.preventDefault();e[m[ev.key][0]]+=m[ev.key][1]*st;
+  if(m[ev.key]){ev.preventDefault();for(const x of selAll())x[m[ev.key][0]]+=m[ev.key][1]*st;
     paint($('#canvas'),card(),cur,project.cards.length);chrome();save();}
   if(ev.key==='Backspace'||ev.key==='Delete'){ev.preventDefault();act('delel');}
 });
