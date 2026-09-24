@@ -87,6 +87,7 @@ button{cursor:pointer}
 .hl{box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:.02em .1em}
 .chrome{position:absolute;inset:0;pointer-events:none}
 .selbox{position:absolute;border:1.5px solid var(--sel)}
+.marq{position:absolute;border:1.5px dashed var(--sel);background:rgba(91,200,175,.12)}
 .hdl{position:absolute;width:12px;height:12px;background:#fff;border:2px solid var(--sel);
   border-radius:3px;pointer-events:auto}
 .guide{position:absolute;background:var(--warn)}
@@ -559,6 +560,9 @@ function chrome(){
       d.style.cursor=(k==='n'||k==='s')?'ns-resize':(k==='e'||k==='w')?'ew-resize':
         (k==='nw'||k==='se')?'nwse-resize':'nesw-resize';b.appendChild(d);}
     ch.appendChild(b);}
+  if(marq){const m=document.createElement('div');m.className='marq';
+    m.style.cssText=`left:${Math.min(marq.x0,marq.x1)}px;top:${Math.min(marq.y0,marq.y1)}px;`+
+      `width:${Math.abs(marq.x1-marq.x0)}px;height:${Math.abs(marq.y1-marq.y0)}px`;ch.appendChild(m);}
   cv.appendChild(ch);
 }
 let zoomMode='fit';
@@ -886,10 +890,28 @@ $('.stagebar').addEventListener('click',ev=>{
   if(b.id==='btnSafe'){showSafe=!showSafe;b.classList.toggle('on',showSafe);chrome();}
 });
 
-let drag=null, guides=[];
+let drag=null, guides=[], marq=null;
+// 빈 곳에서 끌면 사각형 안에 완전히 들어온 요소를 묶는다. 카드 바깥 여백에서 시작해도 된다
+const toCanvas=ev=>{const r=$('#canvas').getBoundingClientRect();
+  return [(ev.clientX-r.left)/scale,(ev.clientY-r.top)/scale];};
+$('#stage').addEventListener('pointerdown',ev=>{
+  if(ev.button!==0||ev.target.closest('.el,.hdl'))return;
+  const [x,y]=toCanvas(ev);
+  marq={x0:x,y0:y,x1:x,y1:y,base:ev.shiftKey?selAll().map(e=>e.id):[]};
+  if(!ev.shiftKey){selId=null;multi=new Set();}
+  ev.preventDefault();$('#stage').setPointerCapture(ev.pointerId);chrome();inspector();
+});
+$('#stage').addEventListener('pointermove',ev=>{
+  if(!marq)return; [marq.x1,marq.y1]=toCanvas(ev);
+  const l=Math.min(marq.x0,marq.x1),r=Math.max(marq.x0,marq.x1),t=Math.min(marq.y0,marq.y1),b=Math.max(marq.y0,marq.y1);
+  const hit=card().els.filter(e=>e.x>=l&&e.y>=t&&e.x+e.w<=r&&e.y+e.h<=b).map(e=>e.id);
+  multi=new Set([...marq.base,...hit]);selId=[...multi].at(-1)??null;chrome();
+});
+['pointerup','pointercancel'].forEach(t=>$('#stage').addEventListener(t,()=>{
+  if(!marq)return; marq=null; chrome(); inspector();}));
 $('#canvas').addEventListener('pointerdown',ev=>{
   const cv=$('#canvas'), hd=ev.target.closest('.hdl'), ed=ev.target.closest('.el');
-  if(!hd&&!ed){selId=null;chrome();inspector();return;}
+  if(!hd&&!ed)return;   // 빈 곳은 #stage 의 사각형 선택이 맡는다
   if(ed&&ed.querySelector('[contenteditable=true]'))return;
   if(ed){const id=ed.dataset.id, g=selAll().map(x=>x.id);
     if(ev.shiftKey){
