@@ -8,29 +8,27 @@
   "theme": {
     "picks": [
       {
-        "n": "astronaut",
-        "h": "#253368"
+        "n": "cornflower",
+        "h": "#8A8FF8"
       },
       {
-        "n": "soft butter",
-        "h": "#EAD29A"
+        "n": "mercury",
+        "h": "#E5E5E5"
       },
       {
-        "n": "burnt orange",
-        "h": "#C77440"
+        "n": "tango",
+        "h": "#EB6A26"
       },
       {
-        "n": "parchment",
-        "h": "#F3E7D9"
+        "n": "zeus",
+        "h": "#1D1814"
       }
     ],
     "dark": false,
     "font": "NotoSerifKR",
     "roleMap": {
-      "bg": "#F3E7D9",
-      "ink": "#253368",
-      "hl": "#EAD29A",
-      "accent": "#C77440"
+      "accent": "#EB6A26",
+      "hl": "#8A8FF8"
     }
   },
   "frame": {
@@ -55,12 +53,12 @@
           "id": "afd749a",
           "type": "text",
           "x": 80,
-          "y": 190,
+          "y": 150,
           "w": 920,
           "h": 440,
           "opacity": 1,
-          "text": "교육학과 가고 싶다면\n==뭘 읽어야 할까?==",
-          "size": 104,
+          "text": "==교육==관련 학과 \n무슨 책을 읽지?\n",
+          "size": 98,
           "weight": 900,
           "lh": 1.22,
           "ls": -0.035,
@@ -80,7 +78,7 @@
           "h": 160,
           "opacity": 1,
           "text": "교육 계열 생기부 추천 도서 8권",
-          "size": 36,
+          "size": 42,
           "weight": 500,
           "lh": 1.55,
           "ls": -0.02,
