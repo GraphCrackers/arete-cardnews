@@ -1274,12 +1274,12 @@ async function updatePublishMeta(id,commitSha){
   }catch{if(request===metaRequest)el.textContent='게시 기록을 불러오지 못했습니다.';}
 }
 let session='',loginPopup=null,loginTimer=null,publishing=false,deployCheck=0;
-// 편 목록에서 다른 편을 열면 페이지가 새로 뜬다. 탭을 닫기 전까지는 로그인을 유지한다.
+// 편을 바꾸거나 브라우저를 닫았다 켜도 로그인을 유지한다. 세션 자체는 로그인 후 최대 8시간이다.
 const SESSION_KEY='arete-cardnews:session';
-function logout(){session='';try{sessionStorage.removeItem(SESSION_KEY);}catch{}
+function logout(){session='';try{localStorage.removeItem(SESSION_KEY);}catch{}
   $('#btnLogin').textContent='GitHub 로그인';$('#btnPublish').disabled=true;}
 async function login(s,message){
-  session=s;try{sessionStorage.setItem(SESSION_KEY,s);}catch{}
+  session=s;try{localStorage.setItem(SESSION_KEY,s);}catch{}
   try{const user=await api('/api/me');$('#btnLogin').textContent=user.login+' · 로그아웃';
     $('#btnPublish').disabled=false;if(message)publishMessage(message);
   }catch(e){logout();publishMessage(e.message);}
@@ -1311,7 +1311,7 @@ window.addEventListener('message',async event=>{
   clearInterval(loginTimer);loginPopup=null;
   login(event.data.session,'로그인됐습니다. 편집 후 ‘사이트에 반영’을 누르세요.');
 });
-try{const saved=sessionStorage.getItem(SESSION_KEY);if(saved)login(saved);}catch{}
+try{const saved=localStorage.getItem(SESSION_KEY);if(saved)login(saved);}catch{}
 async function watchDeployment(id,sha,ticket){
   for(let i=0;i<24;i++){
     await new Promise(r=>setTimeout(r,5000));if(ticket!==deployCheck)return;

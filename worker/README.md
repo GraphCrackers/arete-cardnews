@@ -16,8 +16,8 @@ GitHub App Redirect URI:
 설치 토큰이나 private key는 서버에서 사용하지 않습니다.
 
 로그인은 PKCE 및 10분짜리 HttpOnly 상태 쿠키로 확인합니다. GitHub 사용자 토큰은
-Client secret에서 파생한 키로 암호화하며, 최대 8시간의 세션을 편집기 탭의 sessionStorage에만
-보관합니다. 같은 탭에서 편을 바꾸거나 새로고침해도 로그인이 유지되고, 탭을 닫거나
+Client secret에서 파생한 키로 암호화하며, 최대 8시간의 세션을 편집기 브라우저의 localStorage에
+보관합니다. 편을 바꾸거나 브라우저를 닫았다 켜도 로그인이 유지되고, 로그아웃하거나
 세션이 만료되면 다시 로그인합니다.
 Client secret을 변경하면 기존 세션도 무효가 됩니다.
 
