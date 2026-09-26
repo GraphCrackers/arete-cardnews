@@ -8,26 +8,27 @@
   "theme": {
     "picks": [
       {
+        "n": "baby blue",
+        "h": "#ACCAF0"
+      },
+      {
+        "n": "azalea",
+        "h": "#F2B7C9"
+      },
+      {
         "n": "antracite",
         "h": "#333333"
       },
       {
-        "n": "chartreuse",
-        "h": "#CBEE88"
-      },
-      {
-        "n": "tangerine",
-        "h": "#FF9855"
-      },
-      {
-        "n": "mercury",
-        "h": "#E5E5E5"
+        "n": "parchment",
+        "h": "#F3E7D9"
       }
     ],
     "dark": false,
     "font": "NotoSerifKR",
     "roleMap": {
-      "hl": "#CBEE88"
+      "hl": "#F2B7C9",
+      "accent": "#ACCAF0"
     }
   },
   "frame": {
@@ -35,7 +36,8 @@
     "header": true,
     "footer": true,
     "logo": "",
-    "logoOp": 0.4
+    "logoOp": 0.4,
+    "logoH": 100
   },
   "cards": [
     {
@@ -1112,7 +1114,7 @@
           "id": "963b4c8",
           "type": "text",
           "x": 80,
-          "y": 1130,
+          "y": 970,
           "w": 920,
           "h": 90,
           "opacity": 1,
@@ -1124,26 +1126,6 @@
           "align": "left",
           "valign": "start",
           "role": "ink",
-          "color": null,
-          "font": null,
-          "italic": false
-        },
-        {
-          "id": "222d54e",
-          "type": "text",
-          "x": 80,
-          "y": 1250,
-          "w": 920,
-          "h": 60,
-          "opacity": 1,
-          "text": "ARETE 탐구방법론 수업에서 이 과정을 직접 해봅니다.",
-          "size": 28,
-          "weight": 400,
-          "lh": 1.5,
-          "ls": -0.02,
-          "align": "left",
-          "valign": "start",
-          "role": "sub",
           "color": null,
           "font": null,
           "italic": false
