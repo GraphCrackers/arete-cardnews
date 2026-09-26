@@ -1950,8 +1950,20 @@
           "h": 270,
           "opacity": 1,
           "role": "ink",
-          "fill": "#CBEE88",
+          "fill": "#333333",
           "radius": 24
+        },
+        {
+          "id": "e1598d3",
+          "type": "shape",
+          "x": 543,
+          "y": 519,
+          "w": 454,
+          "h": 264,
+          "opacity": 1,
+          "role": "ink",
+          "fill": "#E5E5E5",
+          "radius": 21
         },
         {
           "id": "1aca472",
