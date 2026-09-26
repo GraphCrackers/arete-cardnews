@@ -1592,13 +1592,13 @@
         {
           "id": "4916921",
           "type": "image",
-          "x": 502,
-          "y": 699.0,
-          "w": 76,
-          "h": 44,
+          "x": 500,
+          "y": 665,
+          "w": 80,
+          "h": 112,
           "opacity": 1,
           "radius": 0,
-          "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2276%22%20height%3D%2244%22%20viewBox%3D%220%200%2076%2044%22%3E%3Cpath%20d%3D%22M72%2022.0H4M18%2010.0L4%2022.0L18%2034.0%22%20fill%3D%22none%22%20stroke%3D%22%23FF9855%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E",
+          "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2280%22%20height%3D%22112%22%20viewBox%3D%220%200%2080%20112%22%3E%3Cpath%20d%3D%22M4%2056L42%206V34H76V78H42V106Z%22%20fill%3D%22%23FF9855%22%20stroke%3D%22%23FF9855%22%20stroke-width%3D%226%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E",
           "fit": "contain"
         },
         {
