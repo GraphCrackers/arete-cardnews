@@ -2238,8 +2238,9 @@
           "h": 56,
           "opacity": 1,
           "role": "ink",
-          "fill": "#CBEE88",
-          "radius": 999
+          "fill": "#333333",
+          "radius": 999,
+          "color": null
         },
         {
           "id": "db34fe6",
@@ -2255,7 +2256,7 @@
           "ls": -0.02,
           "align": "center",
           "valign": "center",
-          "role": "ink",
+          "role": "bg",
           "color": null,
           "font": null,
           "italic": false,
