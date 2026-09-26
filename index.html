@@ -671,7 +671,7 @@ function elPanel(e){
     <div class="field"><label>불투명도 ${Math.round(e.opacity*100)}%</label><input type="range" min="0" max="1" step=".02" data-k="opacity" value="${e.opacity}"></div>
     <div class="divider"></div>
     <div class="row"><button class="btn" data-act="dupel">복제</button><button class="btn" data-act="delel">삭제</button></div>
-    <p class="hint" style="margin-top:11px">끌어서 이동, 모서리로 크기 조절. 텍스트는 더블클릭하면 그 자리에서 고칠 수 있어요 (마크업 그대로 보입니다). 방향키 1px, Shift+방향키 10px.</p>`;
+    <p class="hint" style="margin-top:11px">끌어서 이동, 모서리로 크기 조절 (Shift 누르면 비율 유지). 텍스트는 더블클릭하면 그 자리에서 고칠 수 있어요 (마크업 그대로 보입니다). 방향키 1px, Shift+방향키 10px.</p>`;
   return h;
 }
 
@@ -860,7 +860,12 @@ function act(a){
     const b=new Blob([JSON.stringify([...new Set(loadedNames)].sort(),null,2)],{type:'application/json'});
     dl(URL.createObjectURL(b),'index.json');
     toast('index.json 저장됨 — 폰트 파일들과 함께 assets/fonts/ 에 올리세요');}
-  if(a==='pickimg')pickImg(d=>{e.src=d;render();});
+  if(a==='pickimg')pickImg(d=>{const im=new Image();
+    im.onload=()=>{   // 지금 상자 안에 원본 비율 그대로 맞춰 넣는다 (가운데 기준)
+      const s=Math.min(e.w/im.naturalWidth,e.h/im.naturalHeight),w=im.naturalWidth*s,h=im.naturalHeight*s;
+      e.x=Math.round(e.x+(e.w-w)/2);e.y=Math.round(e.y+(e.h-h)/2);e.w=Math.round(w);e.h=Math.round(h);
+      e.src=d;render();};
+    im.src=d;});
   if(a==='pickbg')pickImg(d=>{card().bg.src=d;card().bg.type='image';render();});
   if(a==='picklogo')pickImg(d=>{project.frame.logo=d;render();});
   if(a==='logoreset'){project.frame.logo='';render();toast('기본 ARETE 로고로 되돌렸어요');}
@@ -935,7 +940,12 @@ $('#canvas').addEventListener('pointermove',ev=>{
     if(k.includes('e'))e.w=Math.max(16,o.w+dx);
     if(k.includes('s'))e.h=Math.max(16,o.h+dy);
     if(k.includes('w')){e.w=Math.max(16,o.w-dx);e.x=o.x+(o.w-e.w);}
-    if(k.includes('n')){e.h=Math.max(16,o.h-dy);e.y=o.y+(o.h-e.h);}}
+    if(k.includes('n')){e.h=Math.max(16,o.h-dy);e.y=o.y+(o.h-e.h);}
+    if(ev.shiftKey){   // Shift: 가로세로 비율 유지
+      const r=o.w/o.h, edgeV=k==='n'||k==='s', edgeH=k==='e'||k==='w';
+      if(edgeV||(!edgeH&&e.h/o.h>e.w/o.w))e.w=e.h*r;else e.h=e.w/r;
+      e.x=k.includes('w')?o.x+o.w-e.w:edgeV?o.x+(o.w-e.w)/2:o.x;
+      e.y=k.includes('n')?o.y+o.h-e.h:edgeH?o.y+(o.h-e.h)/2:o.y;}}
   paint($('#canvas'),card(),cur,project.cards.length); chrome(); drawGuides();
 });
 ['pointerup','pointercancel'].forEach(t=>$('#canvas').addEventListener(t,()=>{
