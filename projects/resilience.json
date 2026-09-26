@@ -1463,15 +1463,15 @@
         },
         {
           "id": "5f6607a",
-          "type": "shape",
+          "type": "image",
           "x": 80,
           "y": 566,
           "w": 410,
           "h": 310,
           "opacity": 1,
-          "role": "ink",
-          "fill": "#CBEE88",
-          "radius": 24
+          "radius": 0,
+          "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22410%22%20height%3D%22310%22%20viewBox%3D%220%200%20410%20310%22%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%22406%22%20height%3D%22306%22%20rx%3D%2224%22%20fill%3D%22none%22%20stroke%3D%22%23333333%22%20stroke-width%3D%223%22/%3E%3C/svg%3E",
+          "fit": "contain"
         },
         {
           "id": "b7e3b83",
