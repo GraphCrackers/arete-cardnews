@@ -1050,6 +1050,28 @@ async function ensureFonts(c){
     need.add(`${e.weight||400} 16px '${e.font||F}'`);
   await Promise.all([...need].map(s=>document.fonts.load(s).catch(()=>{})));
 }
+// html2canvas 는 두 줄에 걸친 형광펜을 한 덩어리 사각형으로 칠해 글자를 덮는다.
+// 굽기 직전에 형광펜을 단어 단위 조각으로 쪼개 조각마다 한 줄 안에 들어가게 한다.
+// 바깥 span 은 여백만 남겨 줄바꿈 위치가 화면과 같게 유지된다.
+function splitHl(root){
+  for(const hl of root.querySelectorAll('.hl')){
+    const bg=hl.style.background; hl.style.background='transparent';
+    const w=document.createTreeWalker(hl,NodeFilter.SHOW_TEXT), nodes=[];
+    while(w.nextNode())nodes.push(w.currentNode);
+    const pieces=[];
+    for(const t of nodes){
+      const f=document.createDocumentFragment();
+      for(const p of t.data.match(/\s*\S+\s*|\s+/g)||[]){
+        const s=document.createElement('span'); s.style.background=bg; s.textContent=p;
+        f.appendChild(s); pieces.push(s);
+      }
+      t.replaceWith(f);
+    }
+    if(!pieces.length)continue;
+    pieces[0].style.cssText+=';margin-left:-.1em;padding-left:.1em';
+    pieces.at(-1).style.cssText+=';margin-right:-.1em;padding-right:.1em';
+  }
+}
 async function shoot(c,i){
   const hold=document.createElement('div');
   hold.style.cssText=`position:fixed;left:-99999px;top:0;width:${W}px;height:${H}px`;
@@ -1057,6 +1079,7 @@ async function shoot(c,i){
   b.style.width=W+'px'; b.style.height=H+'px'; b.style.transform='none'; b.style.margin='0';
   hold.appendChild(b); document.body.appendChild(hold);
   paint(b,c,i,project.cards.length);
+  splitHl(b);
   await ensureFonts(c);
   await document.fonts.ready; await new Promise(r=>setTimeout(r,110));
   const cv=await html2canvas(b,{width:W,height:H,scale:1,backgroundColor:null,useCORS:true,logging:false});
