@@ -379,6 +379,9 @@ const card=()=>project.cards[cur];
 const sel=()=>card().els.find(e=>e.id===selId)||null;
 // 시프트 클릭 묶음. selId 가 묶음 안에 있을 때만 유효하므로, selId 를 새 요소로 바꾸면 자동으로 단일 선택이 된다
 let multi=new Set(), clip=[];
+// 그룹(grp)은 요소에 붙은 표식이다. 그룹 안 하나를 고르면 같은 그룹 전체가 함께 골라진다
+const withGroups=ids=>{const g=new Set(card().els.filter(e=>ids.includes(e.id)&&e.grp).map(e=>e.grp));
+  return new Set([...ids,...card().els.filter(e=>g.has(e.grp)).map(e=>e.id)]);};
 const selAll=()=>multi.has(selId)?card().els.filter(e=>multi.has(e.id)):(sel()?[sel()]:[]);
 
 /* ---- 팔레트 역할 배정 ---- */
@@ -579,6 +582,9 @@ function chrome(){
       d.style.cursor=(k==='n'||k==='s')?'ns-resize':(k==='e'||k==='w')?'ew-resize':
         (k==='nw'||k==='se')?'nwse-resize':'nesw-resize';b.appendChild(d);}
     ch.appendChild(b);}
+  {const g=selAll(); if(g.length>1&&g[0].grp&&g.every(x=>x.grp===g[0].grp)){
+    const l=Math.min(...g.map(x=>x.x)),t=Math.min(...g.map(x=>x.y)),r=Math.max(...g.map(x=>x.x+x.w)),b=Math.max(...g.map(x=>x.y+x.h));
+    const m=document.createElement('div');m.className='marq';m.style.cssText=`left:${l-6}px;top:${t-6}px;width:${r-l+12}px;height:${b-t+12}px;background:none`;ch.appendChild(m);}}
   if(marq){const m=document.createElement('div');m.className='marq';
     m.style.cssText=`left:${Math.min(marq.x0,marq.x1)}px;top:${Math.min(marq.y0,marq.y1)}px;`+
       `width:${Math.abs(marq.x1-marq.x0)}px;height:${Math.abs(marq.y1-marq.y0)}px`;ch.appendChild(m);}
@@ -873,7 +879,9 @@ function act(a){
     t.roleMap={bg,ink,accent,hl};render();}
 }
 function pasteEls(src){
-  const ns=src.map(x=>{const n=JSON.parse(JSON.stringify(x));n.id=uid();n.x+=24;n.y+=24;return n;});
+  const gm={};
+  const ns=src.map(x=>{const n=JSON.parse(JSON.stringify(x));n.id=uid();n.x+=24;n.y+=24;
+    if(n.grp)n.grp=gm[n.grp]||(gm[n.grp]=uid());return n;});
   card().els.push(...ns);multi=new Set(ns.map(n=>n.id));selId=ns.at(-1).id;render();
 }
 function pickImg(cb){const f=$('#filePick');f.value='';
@@ -911,7 +919,7 @@ $('#stage').addEventListener('pointermove',ev=>{
   if(!marq)return; [marq.x1,marq.y1]=toCanvas(ev);
   const l=Math.min(marq.x0,marq.x1),r=Math.max(marq.x0,marq.x1),t=Math.min(marq.y0,marq.y1),b=Math.max(marq.y0,marq.y1);
   const hit=card().els.filter(e=>e.x>=l&&e.y>=t&&e.x+e.w<=r&&e.y+e.h<=b).map(e=>e.id);
-  multi=new Set([...marq.base,...hit]);selId=[...multi].at(-1)??null;chrome();
+  multi=withGroups([...marq.base,...hit]);selId=[...multi].at(-1)??null;chrome();
 });
 ['pointerup','pointercancel'].forEach(t=>$('#stage').addEventListener(t,()=>{
   if(!marq)return; marq=null; chrome(); inspector();}));
@@ -920,11 +928,12 @@ $('#canvas').addEventListener('pointerdown',ev=>{
   if(!hd&&!ed)return;   // 빈 곳은 #stage 의 사각형 선택이 맡는다
   if(ed&&ed.querySelector('[contenteditable=true]'))return;
   if(ed){const id=ed.dataset.id, g=selAll().map(x=>x.id);
+    const mem=[...withGroups([id])];                                   // 그룹이면 그룹 전체
     if(ev.shiftKey){
       multi=new Set(g);
-      if(multi.has(id)){multi.delete(id);selId=[...multi].at(-1)??null;chrome();inspector();return;}
-      multi.add(id);
-    }else if(!g.includes(id))multi=new Set([id]);   // 묶음 안을 누르면 묶음째 끈다
+      if(multi.has(id)){mem.forEach(m=>multi.delete(m));selId=[...multi].at(-1)??null;chrome();inspector();return;}
+      mem.forEach(m=>multi.add(m));
+    }else if(!g.includes(id))multi=new Set(mem);   // 묶음 안을 누르면 묶음째 끈다
     selId=id;}
   const e=sel(); if(!e)return;
   ev.preventDefault(); cv.setPointerCapture(ev.pointerId);
@@ -1048,6 +1057,14 @@ function layerStep(dir){
 addEventListener('keydown',ev=>{
   if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
   if(document.activeElement.isContentEditable)return;
+  if((ev.ctrlKey||ev.metaKey)&&ev.shiftKey&&ev.code==='KeyG'&&sel()){
+    ev.preventDefault(); const g=selAll();
+    if(ev.altKey){                                                        // 그룹 해제
+      if(!g.some(x=>x.grp))return toast('그룹이 아니에요');
+      g.forEach(x=>delete x.grp); render(); return toast('그룹을 풀었어요');}
+    if(g.length<2)return toast('두 개 이상 고른 뒤 묶으세요');
+    const id=uid(); g.forEach(x=>x.grp=id); render(); return toast(`${g.length}개를 그룹으로 묶었어요`);
+  }
   if((ev.ctrlKey||ev.metaKey)&&!ev.altKey){
     const key=ev.key.toLowerCase();
     if(key==='z'||(key==='y'&&ev.ctrlKey)){
