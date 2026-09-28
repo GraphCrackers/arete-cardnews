@@ -99,16 +99,16 @@
         {
           "id": "c01e03",
           "type": "image",
-          "x": -18,
-          "y": 187,
-          "w": 1018,
-          "h": 533,
+          "x": -2,
+          "y": 199,
+          "w": 1080,
+          "h": 583,
           "src": "assets/img/ai-school-logo.png",
           "fit": "contain",
           "radius": 0,
           "opacity": 0.34,
           "text": "시험도, \n성적도, \n학위도 없는 학교",
-          "rot": -20
+          "rot": -26
         },
         {
           "id": "y3524b3",
