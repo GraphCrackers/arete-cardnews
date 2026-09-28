@@ -804,6 +804,7 @@ function bind(){
       if(k==='opacity')for(const x of selAll())x.opacity=v;
       // 색 역할도 고른 글상자·도형 모두에 같이 준다
       if(k==='role')for(const x of selAll())if(x.type!=='image')x.role=v;
+      if(k==='weight')for(const x of selAll())if(x.type==='text')x.weight=v;
       e[k]=v;
       if(inp.type==='range'||k==='text'){paint($('#canvas'),card(),cur,project.cards.length);chrome();cardList();save();}
       else render();
