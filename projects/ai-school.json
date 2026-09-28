@@ -83,7 +83,7 @@
           "y": 825,
           "w": 884,
           "h": 226,
-          "text": "실리콘밸리 투자사 a16z가 샌프란시스코에 세운 학교.\n무엇을, 누구에게 가르칠까.\n그리고 우리 교육은 무엇을 고민해야 할까.",
+          "text": "실리콘밸리 투자사 a16z가 2027년 9월 여는 학교.\n무엇을, 누구에게 가르칠까.\n그리고 우리 교육은 무엇을 고민해야 할까.",
           "size": 40,
           "weight": 400,
           "lh": 1.8,
@@ -161,6 +161,26 @@
           "fit": "contain",
           "radius": 0,
           "opacity": 0.22
+        },
+        {
+          "id": "c01label",
+          "type": "text",
+          "x": 66,
+          "y": 162,
+          "w": 220,
+          "h": 34,
+          "text": "2027년 9월 개교",
+          "size": 26,
+          "weight": 700,
+          "lh": 1.2,
+          "ls": 0.02,
+          "align": "left",
+          "valign": "start",
+          "role": "accent",
+          "color": null,
+          "font": null,
+          "italic": false,
+          "opacity": 1
         }
       ]
     },
