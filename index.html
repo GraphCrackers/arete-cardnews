@@ -134,11 +134,20 @@ input[type=range]{width:100%;accent-color:var(--sel)}
   padding:9px 11px;margin-bottom:6px;text-decoration:none;color:var(--ink)}
 .pbox a.item:hover{border-color:var(--sel)}
 .pbox a.item small{display:block;color:var(--dim);font-size:11px;margin-top:2px}
-.rolepick{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.rolepick{display:flex;align-items:center;gap:7px;margin-bottom:5px;width:100%;background:var(--panel2);
+  border:1px solid var(--line);border-radius:6px;padding:5px 8px;text-align:left;cursor:pointer}
+.rolepick.open{border-color:var(--sel)}
 .rolepick .sw{width:18px;height:18px;border-radius:4px;border:1px solid var(--line);flex:none}
 .rolepick .nm{width:36px;font-size:12px;color:var(--dim);flex:none}
-.rolepick select{flex:1;min-width:0}
-.rolepick input[type=color]{width:30px;height:26px;padding:0;flex:none}
+.rolepick .cn{flex:1;font-size:12px}
+.rolepick .ar{color:var(--dim);font-size:10px}
+.results{max-height:260px;overflow-y:auto;border:1px solid var(--line);border-radius:6px;margin:-2px 0 8px}
+.results button{display:flex;gap:7px;align-items:center;width:100%;background:none;border:0;
+  padding:4px 7px;text-align:left;border-bottom:1px solid rgba(255,255,255,.04)}
+.results button:hover,.results button.on{background:var(--panel2)}
+.results .sw{width:17px;height:17px}
+.results .nm{flex:1;font-size:12px}
+.results .hx{color:var(--dim);font-size:10.5px;font-variant-numeric:tabular-nums}
 .pbox a.item.on{border-color:var(--sel)}
 .pbox a.item b{float:right;font-size:11px;color:var(--sel);font-weight:600}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--panel2);
@@ -219,23 +228,24 @@ input[type=range]{width:100%;accent-color:var(--sel)}
 <script>
 /* ============ 네이밍 색 데이터 ============ */
 const NAMED = (function(){
-  const raw = "white:FFFFFF|black:000000|burnham:002923|sherwood:014D2F|mint water:0B674E|calanque:17666D|zeus:1D1814|rhino:2A4161|boston blue:4194A2|danube:549BCE|red earth:68230D|eminence:723277|olive:8CA231|red cognac:992A17|hippie pink:A2465F|fun green:007A39|sea green:02774B|deep black:0E0906|olympic blue:1899D3|astronaut:253368|antracite:333333|mercure:4E698E|pesto:647C32|rosewood:6B2220|uranus:72BDBB|turkish red:8F1919|sepia skin:9B5F41|blizzard:A3D9F2|pine green:007A70|cod grey:0A0A0A|ebony blue:14162F|atlantique:1B526A|aqua:26C3EC|picton blue:36BDE7|asparagus:525F4E|mineral grey:658080|turquoise:70C5CA|cornflower:8A8FF8|cumin:924727|provence:9FAE94|amethyst:A452A7|red violet:A71680|green gold:ABA76F|amethyst haze:B6ACC4|milano red:BD1E01|silver:C2C2C2|chartreuse:CBEE88|yuma beige:CFBF9B|indian sun:DEC63D|swiss coffee:E2DDD7|tulip tree:E6A737|flamingo:EB5E31|vanilla ice:EFCAD6|creemy peach:F5CCBE|anise:A8CC8C|baby blue:ACCAF0|old brick:BA2320|pluton:BEDBD8|almond:C6B7A4|thunderbird:CD1F1D|electric lilac:D3B5FF|imperial:DEC63E|oyster pink:E3CCC4|amaranth:E72267|tango:EB6A26|azalea:F2B7C9|ivory:F5F5E9|steel grey:AAA9A9|heliotropium:B032EB|pirate gold:BC7700|french lilac:C29ECA|burnt orange:C77440|hibiscus:CE306A|spritz:D74322|laser lemon:E2DA56|mercury:E5E5E5|soft butter:EAD29A|carissma:ED87AD|parchment:F3E7D9|yellow sea:F9A801|cherokee:FDD596|tangerine:FF9855|milk punch:FFF4D6";
+  const raw = "white:FFFFFF|black:000000|cloud:F1F2F6|cobalt:3355D6|lilac:D6CCFF|burnham:002923|sherwood:014D2F|mint water:0B674E|calanque:17666D|zeus:1D1814|rhino:2A4161|boston blue:4194A2|danube:549BCE|red earth:68230D|eminence:723277|olive:8CA231|red cognac:992A17|hippie pink:A2465F|fun green:007A39|sea green:02774B|deep black:0E0906|olympic blue:1899D3|astronaut:253368|antracite:333333|mercure:4E698E|pesto:647C32|rosewood:6B2220|uranus:72BDBB|turkish red:8F1919|sepia skin:9B5F41|blizzard:A3D9F2|pine green:007A70|cod grey:0A0A0A|ebony blue:14162F|atlantique:1B526A|aqua:26C3EC|picton blue:36BDE7|asparagus:525F4E|mineral grey:658080|turquoise:70C5CA|cornflower:8A8FF8|cumin:924727|provence:9FAE94|amethyst:A452A7|red violet:A71680|green gold:ABA76F|amethyst haze:B6ACC4|milano red:BD1E01|silver:C2C2C2|chartreuse:CBEE88|yuma beige:CFBF9B|indian sun:DEC63D|swiss coffee:E2DDD7|tulip tree:E6A737|flamingo:EB5E31|vanilla ice:EFCAD6|creemy peach:F5CCBE|anise:A8CC8C|baby blue:ACCAF0|old brick:BA2320|pluton:BEDBD8|almond:C6B7A4|thunderbird:CD1F1D|electric lilac:D3B5FF|imperial:DEC63E|oyster pink:E3CCC4|amaranth:E72267|tango:EB6A26|azalea:F2B7C9|ivory:F5F5E9|steel grey:AAA9A9|heliotropium:B032EB|pirate gold:BC7700|french lilac:C29ECA|burnt orange:C77440|hibiscus:CE306A|spritz:D74322|laser lemon:E2DA56|mercury:E5E5E5|soft butter:EAD29A|carissma:ED87AD|parchment:F3E7D9|yellow sea:F9A801|cherokee:FDD596|tangerine:FF9855|milk punch:FFF4D6";
   return raw.split("|").map(s => { const i = s.lastIndexOf(":"); return { n: s.slice(0,i), h: "#"+s.slice(i+1) }; });
 })();
 
 /* ============ 색상 랜덤용 추천 조합 ============
-   [배경, 본문, 포인트, 형광]. 본문 대비 13:1 이상, 포인트 위 글자·형광 위 글자 4.5:1 이상으로 맞춘 조합이다 */
+   [배경, 본문, 포인트, 형광]. 모두 색 목록(NAMED)에 있는 색이다.
+   본문 대비 10:1 이상, 포인트·포인트 위 글자·형광 위 글자 4.5:1 이상으로 맞췄다 */
 const PALETTES={
-  light:[['#F1F2F6','#1F2430','#3355D6','#D6CCFF'],['#F7F5EE','#1E2B24','#1F7A4D','#D2EF95'],
-    ['#FAF6F1','#2B211C','#B84A26','#FFD9C2'],['#F0F6F6','#15292B','#127C7A','#BDEBE6'],
-    ['#F6F7FB','#141B34','#1D3A8A','#FFE27A'],['#FBF4F6','#2A1A24','#8E2C63','#FFC8DD'],
-    ['#F6F3EA','#262619','#5F6D17','#F3DE8A'],['#FFFFFF','#111111','#D7322B','#FFE14D'],
-    ['#F8F4EC','#2E2419','#8A5A2B','#BFE3F7'],['#F5F3FB','#1C1A33','#4B3FB5','#B5EDD1']],
-  dark:[['#11141C','#F1F3F8','#7B9CFF','#C9F53B'],['#0F1A17','#EEF5F1','#3FD29B','#F5E663'],
-    ['#1A1411','#F7EFE8','#FF8A5B','#FFD166'],['#14111F','#F3F0FA','#B69CFF','#FF9ECF'],
-    ['#0B0B0C','#FFFFFF','#FF4D4D','#FFE14D'],['#0E1B2A','#EEF4FA','#4FC3F7','#FFB86B'],
-    ['#1B1B1B','#F2F2F2','#E2DA56','#8FD3C8'],['#102022','#EAF6F5','#5ED6C6','#F7A8B8'],
-    ['#181A12','#F4F5EC','#C5D86D','#F2A65A'],['#121826','#F5F7FA','#FFB020','#9AD0FF']]};
+  light:[['#F1F2F6','#333333','#3355D6','#D6CCFF'],['#F5F5E9','#1D1814','#014D2F','#CBEE88'],
+    ['#FFF4D6','#1D1814','#BA2320','#FDD596'],['#FFFFFF','#000000','#CD1F1D','#E2DA56'],
+    ['#E5E5E5','#333333','#253368','#A3D9F2'],['#F3E7D9','#1D1814','#17666D','#70C5CA'],
+    ['#E2DDD7','#0E0906','#723277','#EFCAD6'],['#FFFFFF','#14162F','#B032EB','#D3B5FF'],
+    ['#F5F5E9','#333333','#007A70','#A8CC8C'],['#FFF4D6','#1D1814','#2A4161','#FF9855']],
+  dark:[['#14162F','#FFFFFF','#8A8FF8','#CBEE88'],['#002923','#F5F5E9','#70C5CA','#E2DA56'],
+    ['#1D1814','#FFF4D6','#FF9855','#FDD596'],['#000000','#FFFFFF','#EB5E31','#E2DA56'],
+    ['#0A0A0A','#E5E5E5','#26C3EC','#ED87AD'],['#253368','#F5F5E9','#F9A801','#ACCAF0'],
+    ['#333333','#FFFFFF','#E2DA56','#72BDBB'],['#0E0906','#F3E7D9','#E6A737','#F2B7C9'],
+    ['#14162F','#FFF4D6','#36BDE7','#EAD29A'],['#1D1814','#FFFFFF','#D3B5FF','#A8CC8C']]};
 
 /* ============ 유틸 ============ */
 let W=1080, H=1350;
@@ -359,7 +369,7 @@ let project=blank(), cur=0, selId=null, scale=1, showSafe=true;
 
 function blank(){
   return {v:3, name:'제목 없는 카드뉴스', size:{w:1080,h:1350},
-    theme:{ picks:[], roleMap:{bg:'#F5F5E9',ink:'#333333',accent:'#1D3A8A',hl:'#E2DA56'},
+    theme:{ picks:[], roleMap:{bg:'#F5F5E9',ink:'#333333',accent:'#253368',hl:'#E2DA56'},
       dark:false, font:'Pretendard' },
     frame:{ label:'칼럼', header:true, footer:true, logo:'' },
     cards:[ preset('cover') ]};
@@ -627,6 +637,7 @@ function cardList(){
 const sw=(a,b)=>{const t=project.cards[a];project.cards[a]=project.cards[b];project.cards[b]=t;};
 
 /* ============ 오른쪽 패널 ============ */
+let roleOpen=null;   // 색 목록이 펼쳐진 역할(bg·ink·accent·hl)
 
 function inspector(){
   const e=sel(); $('#rightTitle').textContent=e?({text:'텍스트',shape:'도형',image:'이미지'})[e.type]:'카드 · 팔레트';
@@ -692,15 +703,15 @@ function cardPanel(){
   h+=`<h3 style="padding:6px 0 6px">색</h3>`;
   {
     const ROLES=[['bg','배경'],['ink','본문'],['accent','포인트'],['hl','형광']];
-    h+=ROLES.map(([k,n])=>`<div class="rolepick">
-      <span class="sw" style="background:${R[k]}"></span>
-      <span class="nm">${n}</span>
-      <select data-role="${k}">
-        ${NAMED.some(c=>c.h.toUpperCase()===R[k].toUpperCase())?'':`<option value="${R[k]}" selected>직접 지정 ${R[k]}</option>`}
-        ${NAMED.map(c=>`<option value="${c.h}" ${c.h.toUpperCase()===R[k].toUpperCase()?'selected':''}>${esc(c.n)}</option>`).join('')}
-      </select>
-      <input type="color" data-rolehex="${k}" value="${R[k]}" title="아무 색이나 직접">
-    </div>`).join('');
+    const same=(a,b)=>a.toUpperCase()===b.toUpperCase();
+    h+=ROLES.map(([k,n])=>{
+      const nm=(NAMED.find(c=>same(c.h,R[k]))||{n:R[k]}).n, open=roleOpen===k;
+      return `<button class="rolepick ${open?'open':''}" data-roleopen="${k}">
+        <span class="sw" style="background:${R[k]}"></span><span class="nm">${n}</span>
+        <span class="cn">${esc(nm)}</span><span class="ar">${open?'▲':'▼'}</span></button>`
+        +(open?`<div class="results">${NAMED.map(c=>`<button data-rolepick="${k}" data-hex="${c.h}" class="${same(c.h,R[k])?'on':''}">
+          <span class="sw" style="background:${c.h}"></span><span class="nm">${esc(c.n)}</span><span class="hx">${c.h}</span></button>`).join('')}</div>`:'');
+    }).join('');
     h+=`<div class="row" style="margin-top:6px"><div class="field"><div class="seg" data-seg="dark">
       <button data-v="0" class="${t.dark?'':'on'}">라이트</button><button data-v="1" class="${t.dark?'on':''}">다크</button></div></div>
       <div class="field"><button class="btn" style="width:100%" data-act="randcolor">🎲 색상 랜덤</button></div></div>`;
@@ -808,19 +819,12 @@ function bind(){
     paint($('#canvas'),card(),cur,project.cards.length);chrome();cardList();save();}));
   box.querySelectorAll('[data-frcat]').forEach(s=>s.addEventListener('change',()=>{
     project.frame.label=s.value;render();}));
-  box.querySelectorAll('[data-role]').forEach(s=>s.addEventListener('change',()=>{
+  box.querySelectorAll('[data-roleopen]').forEach(b=>b.onclick=()=>{
+    roleOpen=roleOpen===b.dataset.roleopen?null:b.dataset.roleopen; inspector();
+    box.querySelector('.results .on')?.scrollIntoView({block:'center'});});
+  box.querySelectorAll('[data-rolepick]').forEach(b=>b.onclick=()=>{
     const M=project.theme.roleMap=project.theme.roleMap||{};
-    M[s.dataset.role]=s.value;
-    render();}));
-  box.querySelectorAll('[data-rolehex]').forEach(inp=>{
-    inp.addEventListener('input',()=>{                       // 끄는 동안 미리보기
-      const M=project.theme.roleMap=project.theme.roleMap||{};
-      M[inp.dataset.rolehex]=inp.value;
-      paint($('#canvas'),card(),cur,project.cards.length);cardList();save();});
-    inp.addEventListener('change',()=>{                      // 놓으면 확정하고 패널까지 새로
-      const M=project.theme.roleMap=project.theme.roleMap||{};
-      M[inp.dataset.rolehex]=inp.value; render();});
-  });
+    M[b.dataset.rolepick]=b.dataset.hex; roleOpen=null; render();});
   box.querySelectorAll('[data-th]').forEach(inp=>inp.addEventListener('change',()=>{project.theme[inp.dataset.th]=inp.value;render();}));
   box.querySelectorAll('[data-seg]').forEach(seg=>seg.addEventListener('click',ev=>{
     const v=ev.target.dataset.v; if(v===undefined)return; const key=seg.dataset.seg, e=sel();
