@@ -802,6 +802,8 @@ function bind(){
       if(k==='size'){const d=v-e.size;for(const x of selAll())if(x.type==='text')x.size=Math.max(8,x.size+d);render();return;}
       // 불투명도는 고른 요소 모두를 같은 값으로 맞춘다
       if(k==='opacity')for(const x of selAll())x.opacity=v;
+      // 색 역할도 고른 글상자·도형 모두에 같이 준다
+      if(k==='role')for(const x of selAll())if(x.type!=='image')x.role=v;
       e[k]=v;
       if(inp.type==='range'||k==='text'){paint($('#canvas'),card(),cur,project.cards.length);chrome();cardList();save();}
       else render();
@@ -861,9 +863,10 @@ function act(a){
   const e=sel();
   // 여러 개를 골랐으면 글상자 모두에 같은 폭(±2)을 더한다. 크기 차이는 그대로 남는다
   if((a==='sz-'||a==='sz+')&&e){for(const x of selAll())if(x.type==='text')x.size=Math.max(8,x.size+(a==='sz+'?2:-2));render();}
-  if(a==='clearcolor'&&e){e.color=null;render();}
+  const tinted=()=>selAll().filter(x=>x.type!=='image');   // 직접 색도 고른 글상자·도형 모두에
+  if(a==='clearcolor'&&e){for(const x of tinted())x.color=null;render();}
   if(a==='freecolor'&&e){const i=document.createElement('input');i.type='color';
-    i.value=e.color||colorOf(e,roles());i.oninput=()=>{e.color=i.value;
+    i.value=e.color||colorOf(e,roles());i.oninput=()=>{for(const x of tinted())x.color=i.value;
       paint($('#canvas'),card(),cur,project.cards.length);chrome();save();};
     i.onchange=()=>render();i.click();}
   if(a==='delel'&&e){const g=selAll();card().els=card().els.filter(x=>!g.includes(x));selId=null;render();}
