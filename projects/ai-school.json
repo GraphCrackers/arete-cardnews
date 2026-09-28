@@ -12,8 +12,8 @@
         "h": "#3355D6"
       },
       {
-        "n": "lilac",
-        "h": "#D6CCFF"
+        "n": "cornflower",
+        "h": "#8A8FF8"
       },
       {
         "n": "cloud",
@@ -29,7 +29,7 @@
     "roleMap": {
       "bg": "#F1F2F6",
       "ink": "#000000",
-      "hl": "#D6CCFF",
+      "hl": "#8A8FF8",
       "accent": "#3355D6"
     }
   },
@@ -1665,7 +1665,7 @@
           "w": 409,
           "h": 128,
           "role": "accent",
-          "fill": "#D6CCFF",
+          "fill": "#8A8FF8",
           "radius": 28,
           "opacity": 1
         },
@@ -1677,7 +1677,7 @@
           "w": 28,
           "h": 28,
           "role": "accent",
-          "fill": "#D6CCFF",
+          "fill": "#8A8FF8",
           "radius": 4,
           "opacity": 1,
           "rot": 45
