@@ -1968,6 +1968,30 @@
           "font": null,
           "italic": false,
           "opacity": 1
+        },
+        {
+          "id": "c06biyani",
+          "type": "image",
+          "x": 800,
+          "y": 380,
+          "w": 190,
+          "h": 211,
+          "src": "assets/img/ai-school-biyani-3c859816.png",
+          "fit": "contain",
+          "radius": 0,
+          "opacity": 1
+        },
+        {
+          "id": "c06horowitz",
+          "type": "image",
+          "x": 800,
+          "y": 800,
+          "w": 190,
+          "h": 196,
+          "src": "assets/img/ai-school-horowitz-4870ba79.png",
+          "fit": "contain",
+          "radius": 0,
+          "opacity": 1
         }
       ]
     },
