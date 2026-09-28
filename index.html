@@ -1044,6 +1044,21 @@ $('#canvas').addEventListener('dblclick',ev=>{
   t.onblur=()=>{e.text=t.innerText.replace(/\n$/,'');t.contentEditable='false';render();};
   t.onkeydown=k=>{if(k.key==='Escape')t.blur();k.stopPropagation();};
 });
+// ponytail: 겹침은 회전을 무시한 사각형으로 본다. 많이 돌린 요소는 빗나갈 수 있다
+function layerStep(dir){
+  const els=card().els, g=selAll(), hit=(a,b)=>a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h;
+  let moved=false;
+  // 앞으로 보낼 때는 위쪽 것부터, 뒤로 보낼 때는 아래쪽 것부터 옮겨야 묶음 순서가 안 꼬인다
+  for(const e of [...g].sort((a,b)=>(els.indexOf(b)-els.indexOf(a))*dir)){
+    const i=els.indexOf(e);
+    for(let j=i+dir;j>=0&&j<els.length;j+=dir){
+      if(g.includes(els[j])||!hit(e,els[j]))continue;
+      // 앞: 빼면 j 가 한 칸 당겨지므로 j 자리가 곧 그 요소 바로 뒤. 뒤: j 자리가 그 요소 바로 앞
+      els.splice(i,1); els.splice(j,0,e); moved=true; break;
+    }
+  }
+  moved?render():toast(dir>0?'앞쪽에 겹친 요소가 없어요':'뒤쪽에 겹친 요소가 없어요');
+}
 addEventListener('keydown',ev=>{
   if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
   if(document.activeElement.isContentEditable)return;
@@ -1052,6 +1067,8 @@ addEventListener('keydown',ev=>{
     if(key==='z'||(key==='y'&&ev.ctrlKey)){
       ev.preventDefault();undoRedo(key==='y'||ev.shiftKey);return;
     }
+    // 파워포인트처럼 Shift+F 는 한 칸 앞으로, Shift+D 는 한 칸 뒤로 (겹친 요소 하나를 넘는다)
+    if(ev.shiftKey&&(key==='f'||key==='d')&&sel()){ev.preventDefault();return layerStep(key==='f'?1:-1);}
     if(key==='d'&&sel()){ev.preventDefault();return act('dupel');}
   }
   const e=sel(); if(!e)return; const st=ev.shiftKey?10:1;
