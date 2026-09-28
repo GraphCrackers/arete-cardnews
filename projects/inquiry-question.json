@@ -20,15 +20,16 @@
         "h": "#333333"
       },
       {
-        "n": "parchment",
-        "h": "#F3E7D9"
+        "n": "mercury",
+        "h": "#E5E5E5"
       }
     ],
     "dark": false,
-    "font": "NotoSerifKR",
+    "font": "GmarketSans",
     "roleMap": {
       "hl": "#F2B7C9",
-      "accent": "#ACCAF0"
+      "accent": "#ACCAF0",
+      "bg": "#E5E5E5"
     }
   },
   "frame": {
