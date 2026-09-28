@@ -477,7 +477,7 @@
           "y": 1212,
           "w": 800,
           "h": 28,
-          "text": "출처: 학교 공식 사이트·FAQ(2026.9.27 확인), a16z 발표(2026.9.22)",
+          "text": "출처: 학교 공식 사이트·FAQ(2026.9.27 확인), a16z 발표(2026.9.22) / 로고: a16z 공식 사이트",
           "size": 18,
           "weight": 400,
           "lh": 1.4,
@@ -525,6 +525,18 @@
           "fit": "cover",
           "radius": 0,
           "opacity": 0.58
+        },
+        {
+          "id": "c02logo",
+          "type": "image",
+          "x": 760,
+          "y": 925,
+          "w": 240,
+          "h": 89,
+          "src": "assets/img/ai-school-a16z-logo.png",
+          "fit": "contain",
+          "radius": 0,
+          "opacity": 1
         }
       ]
     },
