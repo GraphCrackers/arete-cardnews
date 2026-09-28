@@ -1125,6 +1125,24 @@ function splitHl(root){
     pieces.at(-1).style.cssText+=';margin-right:-.1em;padding-right:.1em';
   }
 }
+// html2canvas 는 object-fit(contain·cover)을 무시하고 이미지를 칸 모양대로 늘려 굽는다.
+// 굽기 직전에 이미지마다 칸 크기 캔버스에 화면과 같은 맞춤으로 미리 그려 src 를 바꿔 끼운다.
+async function bakeFit(root){
+  for(const img of root.querySelectorAll('img')){
+    const fit=img.style.objectFit||getComputedStyle(img).objectFit;
+    if(fit!=='contain'&&fit!=='cover')continue;
+    try{
+      if(!img.complete)await new Promise(r=>{img.onload=img.onerror=r;});
+      const bw=img.clientWidth, bh=img.clientHeight, nw=img.naturalWidth, nh=img.naturalHeight;
+      if(!bw||!bh||!nw||!nh)continue;
+      const k=2, cv=document.createElement('canvas'); cv.width=bw*k; cv.height=bh*k;
+      const s=(fit==='contain'?Math.min:Math.max)(bw/nw,bh/nh), dw=nw*s, dh=nh*s;
+      cv.getContext('2d').drawImage(img,(bw-dw)/2*k,(bh-dh)/2*k,dw*k,dh*k);
+      img.src=cv.toDataURL('image/png'); img.style.objectFit='fill';
+      await new Promise(r=>{ if(img.complete)r(); else img.onload=img.onerror=r; });
+    }catch(e){}   // 다른 사이트 이미지라 캔버스에 못 그리면 그대로 둔다
+  }
+}
 async function shoot(c,i){
   const hold=document.createElement('div');
   hold.style.cssText=`position:fixed;left:-99999px;top:0;width:${W}px;height:${H}px`;
@@ -1132,6 +1150,7 @@ async function shoot(c,i){
   b.style.width=W+'px'; b.style.height=H+'px'; b.style.transform='none'; b.style.margin='0';
   hold.appendChild(b); document.body.appendChild(hold);
   paint(b,c,i,project.cards.length);
+  await bakeFit(b);
   splitHl(b);
   await ensureFonts(c);
   await document.fonts.ready; await new Promise(r=>setTimeout(r,110));
