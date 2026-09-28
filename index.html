@@ -800,6 +800,8 @@ function bind(){
       if(['lh','ls','opacity'].includes(k))v=parseFloat(v);
       // 크기 칸에 숫자를 쳐도 ± 버튼처럼 바뀐 폭만큼 고른 글상자 모두에 더한다
       if(k==='size'){const d=v-e.size;for(const x of selAll())if(x.type==='text')x.size=Math.max(8,x.size+d);render();return;}
+      // 불투명도는 고른 요소 모두를 같은 값으로 맞춘다
+      if(k==='opacity')for(const x of selAll())x.opacity=v;
       e[k]=v;
       if(inp.type==='range'||k==='text'){paint($('#canvas'),card(),cur,project.cards.length);chrome();cardList();save();}
       else render();
