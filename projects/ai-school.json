@@ -185,6 +185,18 @@
           "fit": "cover",
           "radius": 0,
           "opacity": 0.3
+        },
+        {
+          "id": "c01ceo",
+          "type": "image",
+          "x": 670,
+          "y": 890,
+          "w": 330,
+          "h": 305,
+          "src": "assets/img/ai-school-ceo.png",
+          "fit": "contain",
+          "radius": 0,
+          "opacity": 1
         }
       ]
     },
