@@ -10,5 +10,9 @@
   {
     "id": "edu-books",
     "title": "교육 계열 추천 도서"
+  },
+  {
+    "id": "ai-school",
+    "title": "실리콘밸리의 AI 학교 편"
   }
 ]
