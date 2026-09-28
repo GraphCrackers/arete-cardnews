@@ -798,6 +798,8 @@ function bind(){
       const e=sel(); if(!e)return; let v=inp.value;
       if(['size','weight','x','y','w','h','radius','rot'].includes(k))v=parseFloat(v)||0;
       if(['lh','ls','opacity'].includes(k))v=parseFloat(v);
+      // 크기 칸에 숫자를 쳐도 ± 버튼처럼 바뀐 폭만큼 고른 글상자 모두에 더한다
+      if(k==='size'){const d=v-e.size;for(const x of selAll())if(x.type==='text')x.size=Math.max(8,x.size+d);render();return;}
       e[k]=v;
       if(inp.type==='range'||k==='text'){paint($('#canvas'),card(),cur,project.cards.length);chrome();cardList();save();}
       else render();
@@ -855,7 +857,8 @@ function bind(){
 
 function act(a){
   const e=sel();
-  if((a==='sz-'||a==='sz+')&&e){e.size=Math.max(8,e.size+(a==='sz+'?2:-2));render();}
+  // 여러 개를 골랐으면 글상자 모두에 같은 폭(±2)을 더한다. 크기 차이는 그대로 남는다
+  if((a==='sz-'||a==='sz+')&&e){for(const x of selAll())if(x.type==='text')x.size=Math.max(8,x.size+(a==='sz+'?2:-2));render();}
   if(a==='clearcolor'&&e){e.color=null;render();}
   if(a==='freecolor'&&e){const i=document.createElement('input');i.type='color';
     i.value=e.color||colorOf(e,roles());i.oninput=()=>{e.color=i.value;
