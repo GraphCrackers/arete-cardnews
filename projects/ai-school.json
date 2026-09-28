@@ -1665,7 +1665,7 @@
           "w": 409,
           "h": 128,
           "role": "accent",
-          "fill": "#8A8FF8",
+          "fill": "#D3B5FF",
           "radius": 28,
           "opacity": 1
         },
@@ -1677,7 +1677,7 @@
           "w": 28,
           "h": 28,
           "role": "accent",
-          "fill": "#8A8FF8",
+          "fill": "#D3B5FF",
           "radius": 4,
           "opacity": 1,
           "rot": 45
