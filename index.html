@@ -509,7 +509,7 @@ function inline(s,R){
 }
 function colorOf(e,R){
   if(e.color)return e.color;
-  return {ink:R.ink,sub:R.sub,accent:R.accent,line:R.line,onAccent:onColor(R.accent,R.ink,R.bg),bg:R.bg}[e.role]||R.ink;
+  return {ink:R.ink,sub:R.sub,accent:R.accent,line:R.line,onAccent:onColor(R.accent,R.ink,R.bg),bg:R.bg,hl:R.hl}[e.role]||R.ink;
 }
 
 /* ============ 렌더 ============ */
@@ -676,7 +676,7 @@ function elPanel(e){
   }
   if(e.type==='shape'||e.type==='text'){
     h+=`<div class="field"><label>색 역할 <span class="hint">팔레트에서 자동</span></label><select data-k="role">
-      ${[['ink','본문/제목'],['sub','보조'],['accent','포인트'],['line','구분선'],['onAccent','포인트 위 글자'],['bg','배경색']]
+      ${[['ink','본문/제목'],['sub','보조'],['accent','포인트'],['hl','형광'],['line','구분선'],['onAccent','포인트 위 글자'],['bg','배경색']]
         .map(([v,n])=>`<option value="${v}" ${e.role===v?'selected':''}>${n}</option>`).join('')}</select></div>`;
     h+=`<div class="field"><button class="btn" style="width:100%" data-act="freecolor">직접 색 지정${e.color?` (${e.color})`:''}</button>
       ${e.color?`<button class="btn ghost" style="width:100%;margin-top:5px" data-act="clearcolor">역할 색으로 되돌리기</button>`:''}</div>`;

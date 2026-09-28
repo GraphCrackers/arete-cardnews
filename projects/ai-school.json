@@ -1664,8 +1664,8 @@
           "y": 611,
           "w": 409,
           "h": 128,
-          "role": "accent",
-          "fill": "#D3B5FF",
+          "role": "hl",
+          "fill": null,
           "radius": 28,
           "opacity": 1
         },
@@ -1676,8 +1676,8 @@
           "y": 679,
           "w": 28,
           "h": 28,
-          "role": "accent",
-          "fill": "#D3B5FF",
+          "role": "hl",
+          "fill": null,
           "radius": 4,
           "opacity": 1,
           "rot": 45
