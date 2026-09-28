@@ -117,18 +117,7 @@ input[type=range]{width:100%;accent-color:var(--sel)}
 .preset:hover{border-color:var(--sel)}
 .preset b{display:block;font-weight:600;font-size:12px}
 .preset i{font-style:normal;color:var(--dim);font-size:11px}
-.swatchrow{display:flex;gap:6px;align-items:center;background:var(--panel2);border:1px solid var(--line);
-  border-radius:6px;padding:5px 7px;margin-bottom:5px}
 .sw{width:22px;height:22px;border-radius:5px;flex:none;border:1px solid rgba(255,255,255,.18)}
-.swatchrow .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
-.swatchrow .hx{color:var(--dim);font-size:10.5px;font-variant-numeric:tabular-nums}
-.swatchrow button{background:none;border:0;color:var(--dim);padding:0 2px}
-.swatchrow button:hover{color:var(--warn)}
-.results{max-height:210px;overflow-y:auto;border:1px solid var(--line);border-radius:6px;margin-top:5px}
-.results button{display:flex;gap:7px;align-items:center;width:100%;background:none;border:0;
-  padding:4px 7px;text-align:left;border-bottom:1px solid rgba(255,255,255,.04)}
-.results button:hover{background:var(--panel2)}
-.results .sw{width:17px;height:17px}
 .roles{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:8px 0 4px}
 .roles div{text-align:center;font-size:10px;color:var(--dim)}
 .roles i{display:block;height:26px;border-radius:5px;margin-bottom:3px;border:1px solid rgba(255,255,255,.15)}
@@ -233,6 +222,20 @@ const NAMED = (function(){
   const raw = "white:FFFFFF|black:000000|burnham:002923|sherwood:014D2F|mint water:0B674E|calanque:17666D|zeus:1D1814|rhino:2A4161|boston blue:4194A2|danube:549BCE|red earth:68230D|eminence:723277|olive:8CA231|red cognac:992A17|hippie pink:A2465F|fun green:007A39|sea green:02774B|deep black:0E0906|olympic blue:1899D3|astronaut:253368|antracite:333333|mercure:4E698E|pesto:647C32|rosewood:6B2220|uranus:72BDBB|turkish red:8F1919|sepia skin:9B5F41|blizzard:A3D9F2|pine green:007A70|cod grey:0A0A0A|ebony blue:14162F|atlantique:1B526A|aqua:26C3EC|picton blue:36BDE7|asparagus:525F4E|mineral grey:658080|turquoise:70C5CA|cornflower:8A8FF8|cumin:924727|provence:9FAE94|amethyst:A452A7|red violet:A71680|green gold:ABA76F|amethyst haze:B6ACC4|milano red:BD1E01|silver:C2C2C2|chartreuse:CBEE88|yuma beige:CFBF9B|indian sun:DEC63D|swiss coffee:E2DDD7|tulip tree:E6A737|flamingo:EB5E31|vanilla ice:EFCAD6|creemy peach:F5CCBE|anise:A8CC8C|baby blue:ACCAF0|old brick:BA2320|pluton:BEDBD8|almond:C6B7A4|thunderbird:CD1F1D|electric lilac:D3B5FF|imperial:DEC63E|oyster pink:E3CCC4|amaranth:E72267|tango:EB6A26|azalea:F2B7C9|ivory:F5F5E9|steel grey:AAA9A9|heliotropium:B032EB|pirate gold:BC7700|french lilac:C29ECA|burnt orange:C77440|hibiscus:CE306A|spritz:D74322|laser lemon:E2DA56|mercury:E5E5E5|soft butter:EAD29A|carissma:ED87AD|parchment:F3E7D9|yellow sea:F9A801|cherokee:FDD596|tangerine:FF9855|milk punch:FFF4D6";
   return raw.split("|").map(s => { const i = s.lastIndexOf(":"); return { n: s.slice(0,i), h: "#"+s.slice(i+1) }; });
 })();
+
+/* ============ 색상 랜덤용 추천 조합 ============
+   [배경, 본문, 포인트, 형광]. 본문 대비 13:1 이상, 포인트 위 글자·형광 위 글자 4.5:1 이상으로 맞춘 조합이다 */
+const PALETTES={
+  light:[['#F1F2F6','#1F2430','#3355D6','#D6CCFF'],['#F7F5EE','#1E2B24','#1F7A4D','#D2EF95'],
+    ['#FAF6F1','#2B211C','#B84A26','#FFD9C2'],['#F0F6F6','#15292B','#127C7A','#BDEBE6'],
+    ['#F6F7FB','#141B34','#1D3A8A','#FFE27A'],['#FBF4F6','#2A1A24','#8E2C63','#FFC8DD'],
+    ['#F6F3EA','#262619','#5F6D17','#F3DE8A'],['#FFFFFF','#111111','#D7322B','#FFE14D'],
+    ['#F8F4EC','#2E2419','#8A5A2B','#BFE3F7'],['#F5F3FB','#1C1A33','#4B3FB5','#B5EDD1']],
+  dark:[['#11141C','#F1F3F8','#7B9CFF','#C9F53B'],['#0F1A17','#EEF5F1','#3FD29B','#F5E663'],
+    ['#1A1411','#F7EFE8','#FF8A5B','#FFD166'],['#14111F','#F3F0FA','#B69CFF','#FF9ECF'],
+    ['#0B0B0C','#FFFFFF','#FF4D4D','#FFE14D'],['#0E1B2A','#EEF4FA','#4FC3F7','#FFB86B'],
+    ['#1B1B1B','#F2F2F2','#E2DA56','#8FD3C8'],['#102022','#EAF6F5','#5ED6C6','#F7A8B8'],
+    ['#181A12','#F4F5EC','#C5D86D','#F2A65A'],['#121826','#F5F7FA','#FFB020','#9AD0FF']]};
 
 /* ============ 유틸 ============ */
 let W=1080, H=1350;
@@ -356,7 +359,7 @@ let project=blank(), cur=0, selId=null, scale=1, showSafe=true;
 
 function blank(){
   return {v:3, name:'제목 없는 카드뉴스', size:{w:1080,h:1350},
-    theme:{ picks:[{n:'antracite',h:'#333333'},{n:'laser lemon',h:'#E2DA56'},{n:'ivory',h:'#F5F5E9'}],
+    theme:{ picks:[], roleMap:{bg:'#F5F5E9',ink:'#333333',accent:'#1D3A8A',hl:'#E2DA56'},
       dark:false, font:'Pretendard' },
     frame:{ label:'칼럼', header:true, footer:true, logo:'' },
     cards:[ preset('cover') ]};
@@ -370,7 +373,7 @@ const selAll=()=>multi.has(selId)?card().els.filter(e=>multi.has(e.id)):(sel()?[
 
 /* ---- 팔레트 역할 배정 ---- */
 function roles(){
-  const t=project.theme, p=t.picks.length?t.picks.map(x=>x.h):['#f2f0e4','#28282d'];
+  const t=project.theme, p=t.picks?.length?t.picks.map(x=>x.h):['#f2f0e4','#28282d'];
   // theme.roleMap 에 값이 있으면 그것을 쓴다. 비어 있으면 예전처럼 자동으로 잡는다
   const M = t.roleMap || {};
   const byL=[...p].sort((a,b)=>lum(b)-lum(a));
@@ -624,7 +627,6 @@ function cardList(){
 const sw=(a,b)=>{const t=project.cards[a];project.cards[a]=project.cards[b];project.cards[b]=t;};
 
 /* ============ 오른쪽 패널 ============ */
-let colorQuery='', colorTarget=null;
 
 function inspector(){
   const e=sel(); $('#rightTitle').textContent=e?({text:'텍스트',shape:'도형',image:'이미지'})[e.type]:'카드 · 팔레트';
@@ -687,39 +689,22 @@ function cardPanel(){
   let h=`<div class="field"><label>캔버스 비율</label><div class="seg" data-seg="ratio">
     <button data-v="45" class="${project.size.h===1350?'on':''}">4:5 · 1080×1350</button>
     <button data-v="11" class="${project.size.h===1080?'on':''}">1:1 · 1080×1080</button></div></div>`;
-  h+=`<h3 style="padding:6px 0 6px">키 컬러</h3>`;
-  h+=t.picks.map((p,i)=>`<div class="swatchrow"><span class="sw" style="background:${p.h}"></span>
-    <span class="nm">${esc(p.n)}</span><span class="hx">${p.h}</span>
-    <button data-rm="${i}" title="빼기">✕</button></div>`).join('') || `<p class="hint">색을 2~4개 고르면 배치를 자동으로 잡습니다.</p>`;
-  h+=`<div class="field" style="margin-top:6px"><input type="text" id="colorSearch" placeholder="색 이름 검색 (antracite, laser lemon…)" value="${esc(colorQuery)}"></div>`;
+  h+=`<h3 style="padding:6px 0 6px">색</h3>`;
   {
-    const q=colorQuery.trim().toLowerCase();
-    const hit=NAMED.filter(c=>c.n.toLowerCase().includes(q)).slice(0,80);
-    h+=`<div class="results">`+(hit.length?hit.map(c=>`<button data-add-color="${c.h}" data-name="${esc(c.n)}">
-      <span class="sw" style="background:${c.h}"></span><span class="nm">${esc(c.n)}</span><span class="hx">${c.h}</span></button>`).join('')
-      :`<div style="padding:9px" class="hint">결과 없음</div>`)+`</div>`;
-    h+=`<p class="hint" style="margin-top:5px">${NAMED.length.toLocaleString()}개 색 중 검색합니다.</p>`;
-  }
-
-  // 역할 직접 배정 — 비워두면 위 자동 배치를 따른다
-  {
-    const M=t.roleMap||{};
-    const ROLES=[['bg','배경'],['ink','본문'],['hl','형광'],['accent','포인트']];
-    const anyFixed=ROLES.some(([k])=>M[k]);
-    h+=`<div class="field" style="margin-top:9px">
-      <label>색 배정 ${anyFixed?'<b style="color:var(--sel)">일부 직접 지정됨</b>':'(비우면 자동)'}</label></div>`;
+    const ROLES=[['bg','배경'],['ink','본문'],['accent','포인트'],['hl','형광']];
     h+=ROLES.map(([k,n])=>`<div class="rolepick">
       <span class="sw" style="background:${R[k]}"></span>
       <span class="nm">${n}</span>
       <select data-role="${k}">
-        <option value="" ${M[k]?'':'selected'}>자동</option>
-        ${t.picks.map(p=>`<option value="${p.h}" ${M[k]===p.h?'selected':''}>${esc(p.n)}</option>`).join('')}
-        ${M[k]&&!t.picks.some(p=>p.h===M[k])?`<option value="${M[k]}" selected>직접 지정 ${M[k]}</option>`:''}
+        ${NAMED.some(c=>c.h.toUpperCase()===R[k].toUpperCase())?'':`<option value="${R[k]}" selected>직접 지정 ${R[k]}</option>`}
+        ${NAMED.map(c=>`<option value="${c.h}" ${c.h.toUpperCase()===R[k].toUpperCase()?'selected':''}>${esc(c.n)}</option>`).join('')}
       </select>
       <input type="color" data-rolehex="${k}" value="${R[k]}" title="아무 색이나 직접">
     </div>`).join('');
-    if(anyFixed)h+=`<div class="field"><button class="btn" style="width:100%" data-act="rolesauto">전부 자동으로</button></div>`;
-    h+=`<p class="hint">‘자동’은 밝기·채도로 알아서 배치합니다. 마음에 안 들면 여기서 직접 고르세요.</p>`;
+    h+=`<div class="row" style="margin-top:6px"><div class="field"><div class="seg" data-seg="dark">
+      <button data-v="0" class="${t.dark?'':'on'}">라이트</button><button data-v="1" class="${t.dark?'on':''}">다크</button></div></div>
+      <div class="field"><button class="btn" style="width:100%" data-act="randcolor">🎲 색상 랜덤</button></div></div>`;
+    h+=`<p class="hint">색 고르기가 귀찮으면 라이트·다크를 고르고 ‘색상 랜덤’을 누르세요. 누를 때마다 어울리는 조합으로 바뀝니다.</p>`;
   }
   h+=`<div class="roles">
     <div><i style="background:${R.bg}"></i>배경</div><div><i style="background:${R.ink}"></i>본문</div>
@@ -825,7 +810,7 @@ function bind(){
     project.frame.label=s.value;render();}));
   box.querySelectorAll('[data-role]').forEach(s=>s.addEventListener('change',()=>{
     const M=project.theme.roleMap=project.theme.roleMap||{};
-    if(s.value)M[s.dataset.role]=s.value; else delete M[s.dataset.role];
+    M[s.dataset.role]=s.value;
     render();}));
   box.querySelectorAll('[data-rolehex]').forEach(inp=>{
     inp.addEventListener('input',()=>{                       // 끄는 동안 미리보기
@@ -841,7 +826,8 @@ function bind(){
     const v=ev.target.dataset.v; if(v===undefined)return; const key=seg.dataset.seg, e=sel();
     if(key==='bgtype')card().bg.type=v;
     else if(key==='ratio'){project.size={w:1080,h:v==='45'?1350:1080};applySize();}
-    else if(key==='dark')project.theme.dark=v==='1';
+    // 라이트·다크를 바꾸면 그 테마의 조합을 바로 하나 입힌다
+    else if(key==='dark'){project.theme.dark=v==='1';return act('randcolor');}
     else if(key==='header'||key==='footer')project.frame[key]=v==='1';
     else if(key==='logoOn')project.frame.logoOn=v==='1';
     // 정렬·기울임·맞춤도 고른 요소 중 같은 종류 모두에 준다
@@ -849,13 +835,6 @@ function bind(){
     render();}));
   box.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{
     const n=preset(b.dataset.preset);n.id=card().id;n.bg=card().bg;project.cards[cur]=n;selId=null;render();});
-  box.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{project.theme.picks.splice(+b.dataset.rm,1);render();});
-  box.querySelectorAll('[data-add-color]').forEach(b=>b.onclick=()=>{
-    if(project.theme.picks.length>=4)return toast('키 컬러는 4개까지만 — 하나 빼고 추가하세요');
-    project.theme.picks.push({n:b.dataset.name,h:b.dataset.addColor});colorQuery='';render();});
-  const cs=$('#colorSearch');
-  if(cs){cs.oninput=()=>{colorQuery=cs.value;inspector();
-    const n=$('#colorSearch');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length);}};}
   box.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>act(b.dataset.act));
 }
 
@@ -884,7 +863,10 @@ function act(a){
   if(a==='pickbg')pickImg(d=>{card().bg.src=d;card().bg.type='image';render();});
   if(a==='picklogo')pickImg(d=>{project.frame.logo=d;render();});
   if(a==='logoreset'){project.frame.logo='';render();toast('기본 ARETE 로고로 되돌렸어요');}
-  if(a==='rolesauto'){project.theme.roleMap={};render();toast('색 배정을 자동으로 되돌렸어요');}
+  if(a==='randcolor'){const t=project.theme, R=roles(), list=PALETTES[t.dark?'dark':'light'];
+    const rest=list.filter(p=>p[0]!==R.bg||p[2]!==R.accent);
+    const [bg,ink,accent,hl]=rest[Math.floor(Math.random()*rest.length)];
+    t.roleMap={bg,ink,accent,hl};render();}
 }
 function pasteEls(src){
   const ns=src.map(x=>{const n=JSON.parse(JSON.stringify(x));n.id=uid();n.x+=24;n.y+=24;return n;});
