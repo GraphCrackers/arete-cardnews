@@ -802,7 +802,7 @@ function bind(){
       if(k==='size'){const d=v-e.size;for(const x of selAll())if(x.type==='text')x.size=Math.max(8,x.size+d);render();return;}
       // 여러 개를 골랐으면 이 값들은 그 속성이 있는 요소 모두에 같이 준다
       const isText=x=>x.type==='text', SAME={opacity:()=>true, role:x=>x.type!=='image',
-        weight:isText, font:isText, lh:isText, ls:isText, radius:x=>x.type!=='text'};
+        weight:isText, font:isText, lh:isText, ls:isText, radius:x=>x.type!=='text', rot:()=>true};
       if(SAME[k])for(const x of selAll())if(SAME[k](x))x[k]=v;
       e[k]=v;
       if(inp.type==='range'||k==='text'){paint($('#canvas'),card(),cur,project.cards.length);chrome();cardList();save();}
@@ -956,7 +956,9 @@ $('#canvas').addEventListener('pointermove',ev=>{
     let a=Math.atan2(py-cy,px-cx)*180/Math.PI+90;
     if(ev.shiftKey)a=Math.round(a/15)*15;
     else{const q=Math.round(a/90)*90;if(Math.abs(a-q)<4)a=q;}   // 수평·수직 근처는 붙인다
-    a=Math.round(((a%360)+540)%360-180);e.rot=a===-180?180:a;}
+    a=Math.round(((a%360)+540)%360-180);const d=(a===-180?180:a)-(e.rot||0);
+    // 함께 고른 요소도 같은 각도만큼 돌린다(각자 중심 기준). 서로의 각도 차이는 남는다
+    for(const x of selAll())x.rot=Math.round((((x.rot||0)+d)%360+540)%360-180);}
   else{const k=drag.h, r=(e.rot||0)*Math.PI/180, c=Math.cos(r), s=Math.sin(r);
     const lx=dx*c+dy*s, ly=-dx*s+dy*c;   // 마우스 이동량을 요소 자신의 축으로 바꾼다
     if(k.includes('e'))e.w=Math.max(16,o.w+lx);
