@@ -25,12 +25,12 @@
       }
     ],
     "dark": true,
-    "font": "Pretendard",
+    "font": "SUIT",
     "roleMap": {
-      "bg": "#000000",
-      "ink": "#FFFFFF",
-      "accent": "#EB5E31",
-      "hl": "#E2DA56"
+      "bg": "#333333",
+      "ink": "#E5E5E5",
+      "accent": "#6B2220",
+      "hl": "#EAD29A"
     }
   },
   "frame": {
