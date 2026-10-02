@@ -266,10 +266,11 @@ function mix(a,b,t){const A=rgb(a),B=rgb(b);return hex(A.map((v,i)=>v+(B[i]-v)*t
 const onColor=(bg,a,b)=>ratio(bg,a)>=ratio(bg,b)?a:b;
 
 /* ============ 폰트 ============ */
-const FAMS=['Pretendard','SUIT','Paperlogy','GmarketSans','MBK','NotoSerifKR','CormorantGaramond'];
+// 첫 항목이 기본 서체 — 새 편은 이걸로 시작하고 목록 맨 위에 ★ 로 보인다
+const FAMS=['CormorantGaramond','Pretendard','SUIT','Paperlogy','GmarketSans','MBK','NotoSerifKR'];
 // 드롭다운에 보일 이름. 브랜드 서체는 어디에 쓰는 것인지 붙여 둔다
 const FLABEL={NotoSerifKR:'Noto Serif KR — 브랜드 본문(명조)',
-              CormorantGaramond:'Cormorant Garamond — 브랜드 라틴',
+              CormorantGaramond:'★ Cormorant Garamond — 브랜드 라틴 (기본)',
               GmarketSans:'Gmarket Sans'};
 const FALLBACK="'Apple SD Gothic Neo','Malgun Gothic',sans-serif";
 const loaded={};            // family -> Set(weights)
@@ -373,7 +374,7 @@ let project=blank(), cur=0, selId=null, scale=1, showSafe=true;
 function blank(){
   return {v:3, name:'제목 없는 카드뉴스', size:{w:1080,h:1350},
     theme:{ picks:[], roleMap:{bg:'#F5F5E9',ink:'#333333',accent:'#253368',hl:'#E2DA56'},
-      dark:false, font:'Pretendard' },
+      dark:false, font:FAMS[0] },
     frame:{ label:'칼럼', header:true, footer:true, logo:'' },
     cards:[ preset('cover') ]};
 }
