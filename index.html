@@ -267,10 +267,11 @@ const onColor=(bg,a,b)=>ratio(bg,a)>=ratio(bg,b)?a:b;
 
 /* ============ 폰트 ============ */
 // 첫 항목이 기본 서체 — 새 편은 이걸로 시작하고 목록 맨 위에 ★ 로 보인다
-const FAMS=['CormorantGaramond','Pretendard','SUIT','Paperlogy','GmarketSans','MBK','NotoSerifKR'];
+const FAMS=['Brand','CormorantGaramond','Pretendard','SUIT','Paperlogy','GmarketSans','MBK','NotoSerifKR'];
 // 드롭다운에 보일 이름. 브랜드 서체는 어디에 쓰는 것인지 붙여 둔다
 const FLABEL={NotoSerifKR:'Noto Serif KR — 브랜드 본문(명조)',
-              CormorantGaramond:'★ Cormorant Garamond — 브랜드 라틴 (기본)',
+              Brand:'★ 브랜드 기본 — 영문 Cormorant + 한글 Noto Serif',
+              CormorantGaramond:'Cormorant Garamond — 브랜드 라틴',
               GmarketSans:'Gmarket Sans'};
 const FALLBACK="'Apple SD Gothic Neo','Malgun Gothic',sans-serif";
 const loaded={};            // family -> Set(weights)
@@ -310,7 +311,10 @@ async function loadFontFiles(files){
   }
   return ok;
 }
-const stack=f=>`'${f}',${FALLBACK}`;
+// 혼합 서체: 앞 글꼴에 없는 글자(한글)는 브라우저가 다음 글꼴로 채운다. 한 글상자 안에서 영문·한글이 갈린다
+const MIX={Brand:['CormorantGaramond','NotoSerifKR']};
+const parts=f=>MIX[f]||[f];
+const stack=f=>parts(f).map(x=>`'${x}'`).join(',')+','+FALLBACK;
 
 /* ============ 로고 ============
    assets/logo-arete.png 는 **알파 마스크**다 — 모양만 있고 색은 없다.
@@ -364,7 +368,9 @@ async function loadFontManifest(){
   return ok;
 }
 function weightsFor(fam){
-  const s=loaded[fam]; const arr=s?[...s].sort((a,b)=>a-b):[300,400,500,600,700,800,900];
+  const sets=parts(fam).map(x=>loaded[x]).filter(Boolean);   // 혼합이면 두 글꼴 모두 있는 굵기만
+  const s=sets.length&&[...sets[0]].filter(w=>sets.every(t=>t.has(w)));
+  const arr=s?s.sort((a,b)=>a-b):[300,400,500,600,700,800,900];
   return arr;
 }
 
@@ -656,7 +662,7 @@ function inspector(){
 }
 
 function famOptions(v){
-  return FAMS.map(f=>`<option value="${f}" ${f===v?'selected':''}>${FLABEL[f]||f}${loaded[f]?'':' (미로드)'}</option>`).join('');
+  return FAMS.map(f=>`<option value="${f}" ${f===v?'selected':''}>${FLABEL[f]||f}${parts(f).every(x=>loaded[x])?'':' (미로드)'}</option>`).join('');
 }
 function elPanel(e){
   const F=project.theme.font, ws=weightsFor(e.font||F);
@@ -1119,9 +1125,10 @@ addEventListener('paste',ev=>{
 // 글꼴은 지연 로딩이라, 화면에 한 번도 안 쓰인 굵기는 아직 안 받았을 수 있다.
 // PNG 로 굽기 전에 그 카드가 쓰는 것만 골라 실제로 받아 둔다.
 async function ensureFonts(c){
-  const F=project.theme.font, need=new Set([`400 16px '${F}'`,`700 16px '${F}'`]);
-  for(const e of (c.els||[])) if(e.type==='text')
-    need.add(`${e.weight||400} 16px '${e.font||F}'`);
+  const F=project.theme.font, need=new Set();
+  const add=(w,f)=>parts(f).forEach(x=>need.add(`${w} 16px '${x}'`));
+  add(400,F); add(700,F);
+  for(const e of (c.els||[])) if(e.type==='text') add(e.weight||400,e.font||F);
   await Promise.all([...need].map(s=>document.fonts.load(s).catch(()=>{})));
 }
 // html2canvas 는 두 줄에 걸친 형광펜을 한 덩어리 사각형으로 칠해 글자를 덮는다.
@@ -1175,7 +1182,10 @@ async function shoot(c,i){
   splitHl(b);
   await ensureFonts(c);
   await document.fonts.ready; await new Promise(r=>setTimeout(r,110));
-  const cv=await html2canvas(b,{width:W,height:H,scale:1,backgroundColor:null,useCORS:true,logging:false});
+  // html2canvas 는 복제 문서에서 줄을 다시 잡는데, JS 로 등록한 글꼴(FontFace)은 복제본에 따라가지 않는다.
+  // 그러면 기본 글꼴 폭으로 줄바꿈·글자 위치가 잡혀 PNG 에서 자간이 벌어진다. 글꼴을 넘겨준다
+  const cv=await html2canvas(b,{width:W,height:H,scale:1,backgroundColor:null,useCORS:true,logging:false,
+    onclone:d=>{for(const f of document.fonts)try{d.fonts.add(f);}catch{}}});
   hold.remove(); return cv.toDataURL('image/png');
 }
 const dl=(u,n)=>{const a=document.createElement('a');a.href=u;a.download=n;a.click();};
