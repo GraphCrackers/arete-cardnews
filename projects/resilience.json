@@ -38,7 +38,7 @@
     "logoOn": true,
     "logoX": 80,
     "logoB": 56,
-    "logoH": 100,
+    "logoH": 115,
     "logoRole": "ink",
     "logoOp": 0.5
   },
@@ -64,7 +64,7 @@
           "text": "실패와 좌절을 겪어도\n==다시 일어서는 능력==을\n배울 수는 없을까?",
           "size": 100,
           "weight": 700,
-          "lh": 1.49,
+          "lh": 1.4,
           "ls": -0.03,
           "align": "left",
           "valign": "start",
