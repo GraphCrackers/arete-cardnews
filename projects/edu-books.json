@@ -38,7 +38,8 @@
     "header": true,
     "footer": true,
     "logo": "",
-    "logoOp": 0.4
+    "logoOp": 0.4,
+    "logoH": 115
   },
   "cards": [
     {
