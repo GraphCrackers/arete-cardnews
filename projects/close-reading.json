@@ -27,7 +27,10 @@
     "dark": false,
     "font": "Brand",
     "roleMap": {
-      "hl": "#CBEE88"
+      "bg": "#F5F5E9",
+      "ink": "#333333",
+      "accent": "#007A70",
+      "hl": "#A8CC8C"
     }
   },
   "frame": {
