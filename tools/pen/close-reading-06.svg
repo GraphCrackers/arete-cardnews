@@ -1,0 +1,26 @@
+<!-- 매끄러운 종이 미끄럼틀 -->
+<path d="M60 110 C300 110 520 320 940 320"/>
+<path d="M60 158 C300 158 520 368 940 368" stroke-width="12"/>
+<path d="M940 320 L940 368" stroke-width="12"/>
+<circle cx="52" cy="134" r="26" stroke-width="13"/>
+<!-- 글줄 -->
+<path stroke-width="7" transform="translate(87,138) rotate(8 30 0)" d="M0 0 q8 -7 15 0 t15 0 t15 0 t15 0"/>
+<path stroke-width="7" transform="translate(173,156) rotate(16 30 0)" d="M0 0 q8 -7 15 0 t15 0 t15 0 t15 0"/>
+<path stroke-width="7" transform="translate(261,185) rotate(20 30 0)" d="M0 0 q8 -7 15 0 t15 0 t15 0 t15 0"/>
+<path stroke-width="7" transform="translate(386,233) rotate(21 30 0)" d="M0 0 q8 -7 15 0 t15 0 t15 0 t15 0"/>
+<path stroke-width="7" transform="translate(767,336) rotate(6 30 0)" d="M0 0 q8 -7 15 0 t15 0 t15 0 t15 0"/>
+<path stroke-width="7" transform="translate(873,343) rotate(1 30 0)" d="M0 0 q8 -7 15 0 t15 0 t15 0 t15 0"/>
+<!-- 놓친 틀린 곳 -->
+<g transform="translate(659,311) rotate(13)"><path stroke-width="7" d="M-26 0 q7 -7 13 0 t13 0 t13 0 t13 0"/><ellipse rx="40" ry="17" stroke-width="8"/></g>
+<path stroke-width="9" d="M667 257 L673 235 M693 265 L709 249"/>
+<!-- 신나게 미끄러지는 졸라맨 -->
+<circle cx="310" cy="60" r="34"/>
+<path stroke-width="8" d="M294 58 q6 -8 12 0 M316 58 q6 -8 12 0"/>
+<path stroke-width="8" d="M302 74 q10 9 20 0"/>
+<path d="M324 93 L368 180"/>
+<path d="M368 180 L438 134 L498 160"/>
+<path d="M368 180 L424 160 L486 188"/>
+<path d="M334 115 L374 69 L386 27"/>
+<path d="M334 115 L288 91 L264 57"/>
+<!-- 속도선 -->
+<path stroke-width="9" d="M228 90 q-16 20 -10 44 M198 54 q-16 16 -12 36"/>

@@ -1,0 +1,34 @@
+<!-- ① 펼친 책 읽기 -->
+<circle cx="120" cy="70" r="32"/>
+<circle cx="116" cy="74" r="6" fill="#111" stroke="none"/>
+<circle cx="132" cy="74" r="6" fill="#111" stroke="none"/>
+<path d="M118 102 L124 190 M124 190 L100 262 L82 262 M124 190 L150 262 L168 262"/>
+<path d="M120 126 L170 150 L186 140 M120 126 L160 168 L190 158"/>
+<path stroke-width="12" d="M180 150 L222 162 L264 150 L264 112 L222 124 L180 112 Z M222 124 L222 162"/>
+<path stroke-width="6" d="M190 130 l22 6 M190 142 l22 6 M232 136 l22 -6 M232 148 l22 -6"/>
+<!-- 화살표 -->
+<path stroke-width="10" d="M318 160 L372 160 M354 144 L372 160 L354 176"/>
+<!-- ② 책 덮고 떠올리기 -->
+<circle cx="500" cy="70" r="32"/>
+<circle cx="494" cy="62" r="6" fill="#111" stroke="none"/>
+<circle cx="512" cy="62" r="6" fill="#111" stroke="none"/>
+<path d="M500 102 L500 190 M500 190 L476 262 L458 262 M500 190 L524 262 L542 262"/>
+<path d="M500 126 L462 156 L476 100"/>
+<path d="M500 126 L540 160 L548 150"/>
+<rect x="540" y="150" width="56" height="70" rx="5" stroke-width="12"/>
+<path stroke-width="9" d="M610 168 L634 160 M612 196 L638 198 M604 226 L622 242"/>
+<path stroke-width="9" d="M548 50 q10 -10 18 0 M574 32 q10 -10 18 0"/>
+<!-- 화살표 -->
+<path stroke-width="10" d="M662 160 L716 160 M698 144 L716 160 L698 176"/>
+<!-- ③ 백지에 써 보기 -->
+<circle cx="790" cy="96" r="32"/>
+<circle cx="786" cy="102" r="6" fill="#111" stroke="none"/>
+<circle cx="802" cy="102" r="6" fill="#111" stroke="none"/>
+<path d="M790 128 L786 206 M786 206 L764 262 L746 262 M786 206 L812 262 L830 262"/>
+<path d="M789 150 L840 176 L886 184"/>
+<path d="M789 150 L760 196"/>
+<path stroke-width="13" d="M850 212 L982 212 M868 212 L868 262 M964 212 L964 262"/>
+<path stroke-width="10" d="M858 204 L878 182 L976 182 L960 204 Z"/>
+<path stroke-width="7" d="M896 194 q6 -6 11 0 t11 0 t11 0 t11 0"/>
+<path stroke-width="10" d="M884 186 L910 146"/>
+<path stroke-width="10" d="M760 46 L748 24 M790 36 L790 10 M820 46 L834 26"/>

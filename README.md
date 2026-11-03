@@ -77,4 +77,4 @@
 
 ---
 
-관리자 참고: [로그인·게시 서버 설정](worker/README.md) · [문구 작성 기준](voice.md) · [글꼴 안내](assets/fonts/README.md) · [기존 설계 기록](HANDOFF.md)
+관리자 참고: [로그인·게시 서버 설정](worker/README.md) · [문구 작성 기준](voice.md) · [디자인 규칙](design.md) · [글꼴 안내](assets/fonts/README.md) · [기존 설계 기록](HANDOFF.md)
