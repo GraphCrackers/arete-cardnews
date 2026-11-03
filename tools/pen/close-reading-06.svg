@@ -12,11 +12,21 @@
 <circle cx="437" cy="116" r="5" fill="#111" stroke="none"/>
 <circle cx="453" cy="116" r="5" fill="#111" stroke="none"/>
 <path stroke-width="12" d="M458 146 L478 270 M478 270 L452 372 L436 372 M478 270 L514 372 L530 372"/>
-<path stroke-width="12" d="M464 180 L572 128 L688 158"/>
+<path stroke-width="12" d="M464 180 L584 120 L718 128"/>
 <path stroke-width="12" d="M464 180 L440 236"/>
-<path stroke-width="8" d="M656 110 L664 88 M700 114 L716 94"/>
-<!-- 제출 버저 (크게) -->
-<path d="M640 250 A140 108 0 0 1 920 250 Z" fill="#111"/>
-<path stroke-width="9" d="M596 228 L570 226 M944 196 L966 184 M948 228 L974 226"/>
-<rect x="608" y="250" width="344" height="130" rx="18" stroke-width="16"/>
-<text x="780" y="352" text-anchor="middle" font-family="Apple SD Gothic Neo" font-weight="800" font-size="98" fill="#111" stroke="none">제출</text>
+<path stroke-width="8" d="M682 78 L690 56 M724 82 L740 62"/>
+<!-- 제출 푸시 버튼 (크게, 테두리만) -->
+<defs><mask id="cap" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="400">
+ <rect width="1000" height="400" fill="#fff" stroke="none"/>
+ <g fill="#000" stroke="none"><rect x="650" y="140" width="280" height="130"/><ellipse cx="790" cy="140" rx="140" ry="40"/><ellipse cx="790" cy="270" rx="140" ry="40"/></g>
+</mask></defs>
+<g mask="url(#cap)">
+ <ellipse cx="790" cy="276" rx="160" ry="46" stroke-width="12"/>
+ <ellipse cx="790" cy="292" rx="192" ry="54"/>
+ <path d="M598 292 L598 314 A192 54 0 0 0 982 314 L982 292"/>
+</g>
+<ellipse cx="790" cy="140" rx="140" ry="40" stroke-width="16"/>
+<path stroke-width="16" d="M650 140 L650 270 A140 40 0 0 0 930 270 L930 140"/>
+<path stroke-width="8" d="M826 116 q40 4 70 18"/>
+<path stroke-width="9" d="M954 126 L976 112 M958 160 L984 158"/>
+<text x="790" y="282" text-anchor="middle" font-family="Apple SD Gothic Neo" font-weight="800" font-size="92" fill="#111" stroke="none">제출</text>
