@@ -1,0 +1,17 @@
+<!-- 학술지 논문 한 장: AI가 쓴 첫 줄이 그대로 실리고 승인 도장이 찍혔다 -->
+<g transform="translate(0,-70)">
+<path d="M30 110 L205 110 L250 155 L250 380 L30 380 Z"/>
+<path stroke-width="12" d="M205 110 L205 155 L250 155"/>
+<g transform="translate(56,0)"><path stroke-width="7" d="M0 260 q8 -7 15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 M0 296 q8 -7 15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 M0 332 q8 -7 15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0"/></g>
+<path stroke-width="10" d="M62 206 q8 -8 16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0"/>
+<ellipse cx="128" cy="203" rx="86" ry="30" stroke-width="9"/>
+<rect x="306" y="160" width="76" height="66" rx="11" stroke-width="13"/>
+<path stroke-width="10" d="M344 160 L344 144"/>
+<circle cx="344" cy="136" r="8" fill="#111" stroke="none"/>
+<circle cx="333" cy="190" r="6" fill="#111" stroke="none"/>
+<circle cx="356" cy="190" r="6" fill="#111" stroke="none"/>
+<path stroke-width="8" d="M298 200 Q260 186 226 202"/>
+<path stroke-width="8" d="M226 202 L246 206 M226 202 L238 186"/>
+<circle cx="300" cy="340" r="50" stroke-width="11"/>
+<path stroke-width="13" d="M276 340 L294 360 L328 318"/>
+</g>
