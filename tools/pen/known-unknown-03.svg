@@ -1,0 +1,14 @@
+<!-- 달 -->
+<path stroke-width="9" d="M70 22 A30 30 0 1 0 104 70 A24 24 0 0 1 70 22 Z"/>
+<!-- 머리를 감싸 쥔 학생 -->
+<circle cx="220" cy="78" r="30" stroke-width="11"/>
+<g fill="#111" stroke="none"><circle cx="210" cy="86" r="4.5"/><circle cx="230" cy="86" r="4.5"/></g>
+<path stroke-width="11" d="M220 108 L220 158 M220 124 L178 112 L192 70 M220 124 L262 112 L248 70"/>
+<path stroke-width="7" d="M268 48 l14 -12 M276 68 l18 -4"/>
+<!-- 책상과 펼친 책 -->
+<path stroke-width="11" d="M60 160 L400 160 M90 160 L90 215 M370 160 L370 215"/>
+<path stroke-width="8" d="M160 158 L190 142 L220 152 L250 142 L280 158"/>
+<!-- 스탠드 -->
+<path stroke-width="9" d="M338 158 L370 158 M354 158 L354 104 L326 84"/>
+<path stroke-width="9" d="M300 94 L328 70 L346 96 Z"/>
+<path stroke-width="6" d="M302 112 l-10 12 M318 116 l-4 14"/>

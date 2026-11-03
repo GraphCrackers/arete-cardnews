@@ -1,0 +1,18 @@
+<!-- 고개를 갸웃하는 졸라맨 -->
+<circle cx="150" cy="215" r="58"/>
+<g fill="#111" stroke="none"><circle cx="152" cy="205" r="8"/><circle cx="182" cy="205" r="8"/></g>
+<path stroke-width="10" d="M150 245 q14 -6 26 0"/>
+<path d="M150 273 L150 370 M150 370 L112 445 M150 370 L188 445"/>
+<path d="M150 300 L96 352"/>
+<!-- 머리 긁는 팔 -->
+<path d="M150 300 L232 262 L214 196"/>
+<path stroke-width="9" d="M226 176 l14 -10 M234 196 l18 -2"/>
+<!-- 물음표 -->
+<path stroke-width="14" d="M30 82 q0 -40 40 -40 q40 0 40 36 q0 26 -38 36 l0 26"/>
+<circle cx="72" cy="168" r="9" fill="#111" stroke="none"/>
+<!-- 생각 풍선: 회사 건물 -->
+<circle cx="236" cy="132" r="7" stroke-width="9"/>
+<circle cx="266" cy="108" r="11" stroke-width="10"/>
+<ellipse cx="360" cy="96" rx="88" ry="74" stroke-width="12"/>
+<rect x="326" y="52" width="68" height="92" stroke-width="10"/>
+<path stroke-width="8" d="M342 70 l10 0 M368 70 l10 0 M342 92 l10 0 M368 92 l10 0 M342 114 l10 0 M368 114 l10 0 M354 144 l0 -16 l12 0 l0 16"/>

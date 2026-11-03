@@ -1,0 +1,13 @@
+<!-- 바닥 -->
+<path stroke-width="10" d="M20 287 L440 287"/>
+<!-- 블록을 쌓는 부모 -->
+<circle cx="100" cy="72" r="32" stroke-width="12"/>
+<g fill="#111" stroke="none"><circle cx="108" cy="70" r="5"/><circle cx="124" cy="70" r="5"/></g>
+<path stroke-width="12" d="M100 104 L100 205 M100 205 L76 284 M100 205 L124 284 M100 132 L70 182 M100 132 L172 150"/>
+<g stroke-width="11"><rect x="176" y="236" width="50" height="48"/><rect x="176" y="188" width="50" height="48"/><rect x="174" y="124" width="50" height="48"/></g>
+<path stroke-width="7" d="M236 120 l12 -8 M240 140 l14 0"/>
+<!-- 보고 따라 하는 아이 -->
+<circle cx="340" cy="156" r="24" stroke-width="11"/>
+<g fill="#111" stroke="none"><circle cx="326" cy="154" r="4"/><circle cx="338" cy="154" r="4"/></g>
+<path stroke-width="11" d="M340 180 L340 238 M340 238 L322 284 M340 238 L358 284 M340 196 L366 226 M340 196 L306 214"/>
+<g stroke-width="10"><rect x="262" y="250" width="34" height="34"/><rect x="264" y="200" width="34" height="34"/></g>

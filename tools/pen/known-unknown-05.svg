@@ -1,0 +1,16 @@
+<!-- 듣고 적는 의사 -->
+<circle cx="110" cy="70" r="30" stroke-width="11"/>
+<circle cx="100" cy="48" r="9" stroke-width="7"/>
+<g fill="#111" stroke="none"><circle cx="118" cy="72" r="4.5"/><circle cx="132" cy="72" r="4.5"/></g>
+<path stroke-width="11" d="M110 100 L110 190 M110 190 L86 270 M110 190 L134 270 M110 124 L156 150 M110 124 L150 172"/>
+<rect x="152" y="118" width="40" height="56" stroke-width="9"/>
+<path stroke-width="5" d="M160 136 l24 0 M160 150 l24 0"/>
+<!-- 어디가 아픈지 말하는 학생 -->
+<circle cx="330" cy="70" r="30" stroke-width="11"/>
+<g fill="#111" stroke="none"><circle cx="314" cy="72" r="4.5"/><circle cx="328" cy="72" r="4.5"/></g>
+<path stroke-width="7" d="M312 86 q8 6 16 0"/>
+<path stroke-width="11" d="M330 100 L330 190 M330 190 L306 270 M330 190 L354 270 M330 124 L278 150 M330 124 L360 160 L344 214"/>
+<!-- 아픈 무릎 -->
+<path stroke-width="7" d="M370 222 l14 -8 M374 238 l16 2 M362 252 l10 12"/>
+<!-- 말하는 기척 -->
+<path stroke-width="7" d="M232 64 l22 0 M234 86 l20 8 M234 42 l20 -8"/>

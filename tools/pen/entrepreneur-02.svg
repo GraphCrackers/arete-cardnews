@@ -1,0 +1,19 @@
+<defs><mask id="bk"><rect x="0" y="0" width="420" height="300" fill="#fff" stroke="none"/>
+<path fill="#000" stroke="none" d="M116 146 L210 161 L304 146 L304 240 L210 255 L116 240 Z"/></mask></defs>
+<!-- 사전을 펼쳐 든 졸라맨 -->
+<circle cx="210" cy="92" r="34" stroke-width="12"/>
+<g fill="#111" stroke="none"><circle cx="198" cy="99" r="5"/><circle cx="222" cy="99" r="5"/></g>
+<g mask="url(#bk)" stroke-width="12"><path d="M210 126 L210 250 M210 150 L128 196 M210 150 L292 196"/></g>
+<path stroke-width="12" d="M210 250 L184 292 M210 250 L236 292"/>
+<!-- 펼친 책 -->
+<path stroke-width="12" d="M120 150 L210 165 L300 150 L300 236 L210 251 L120 236 Z M210 165 L210 251"/>
+<path stroke-width="6" d="M138 178 L192 187 M138 199 L192 208 M138 220 L192 229 M228 187 L282 178 M228 208 L282 199 M228 229 L282 220"/>
+<!-- 두 뜻: 회사 건물 / 새 아이디어 -->
+<circle cx="158" cy="76" r="5" stroke-width="7"/><circle cx="134" cy="66" r="7" stroke-width="8"/>
+<circle cx="64" cy="66" r="50" stroke-width="10"/>
+<rect x="44" y="40" width="40" height="52" stroke-width="8"/>
+<path stroke-width="6" d="M54 54 l6 0 M68 54 l6 0 M54 68 l6 0 M68 68 l6 0 M60 92 l0 -10 l8 0 l0 10"/>
+<circle cx="262" cy="76" r="5" stroke-width="7"/><circle cx="286" cy="66" r="7" stroke-width="8"/>
+<circle cx="356" cy="66" r="50" stroke-width="10"/>
+<path stroke-width="8" d="M346 88 C330 74 334 40 356 40 C378 40 382 74 366 88 Z M346 98 L366 98"/>
+<path stroke-width="6" d="M318 36 l8 6 M394 36 l-8 6 M356 18 l0 8"/>

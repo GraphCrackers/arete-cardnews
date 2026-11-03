@@ -1,0 +1,16 @@
+<!-- 의사: 이마 거울·차트 -->
+<circle cx="125" cy="175" r="50"/>
+<circle cx="112" cy="140" r="13" stroke-width="9"/>
+<g fill="#111" stroke="none"><circle cx="138" cy="176" r="7"/><circle cx="162" cy="176" r="7"/></g>
+<path d="M125 225 L125 350 M125 350 L92 440 M125 350 L158 440 M125 255 L84 312 M125 255 L176 296"/>
+<rect x="170" y="262" width="46" height="62" stroke-width="10"/>
+<path stroke-width="6" d="M180 282 l26 0 M180 298 l26 0"/>
+<!-- 묻는 학생 -->
+<circle cx="340" cy="205" r="44"/>
+<g fill="#111" stroke="none"><circle cx="318" cy="204" r="7"/><circle cx="340" cy="204" r="7"/></g>
+<path d="M340 249 L340 360 M340 360 L310 440 M340 360 L370 440 M340 280 L282 300"/>
+<path d="M340 280 L398 248 L386 196"/>
+<!-- 물음표 -->
+<path stroke-width="13" d="M372 62 q0 -36 34 -36 q34 0 34 32 q0 22 -32 32 l0 22"/>
+<circle cx="408" cy="142" r="8" fill="#111" stroke="none"/>
+<path stroke-width="8" d="M236 200 l18 0 M234 222 l16 6 M234 178 l16 -6"/>
