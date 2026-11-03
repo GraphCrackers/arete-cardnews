@@ -1,9 +1,5 @@
 [
   {
-    "id": "inquiry-question",
-    "title": "탐구 질문 좁히기"
-  },
-  {
     "id": "resilience",
     "title": "회복탄력성 편",
     "posted": "2026-10-02"
@@ -16,10 +12,6 @@
     "id": "ai-school",
     "title": "실리콘밸리의 AI 학교 편",
     "posted": "2026-10-02"
-  },
-  {
-    "id": "suneung-essay",
-    "title": "수능 서·논술형 편"
   },
   {
     "id": "known-Unknown",
