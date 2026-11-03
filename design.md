@@ -77,4 +77,4 @@
 
 - 본문 아래 여백에 둔다. **아래 끝은 y 1190 이하** — 출처 줄이 y 1212, 로고가 y 1179부터다.
 - 가로로 긴 그림은 `w 800~920`, 비율은 PNG 와 같게.
-- 예: `close-reading` 1·6·9·10장 (원본 `tools/pen/close-reading-*.svg`)
+- 예: `close-reading` 1·6·10장 (원본 `tools/pen/close-reading-*.svg`)
