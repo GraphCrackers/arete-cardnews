@@ -425,10 +425,10 @@ function numberList(items,y0,gap){
   items.forEach((it,i)=>{
     const y=y0+i*gap;
     out.push(S({x:80,y:y,w:56,h:56,radius:999,role:'accent'}));
-    out.push(T({x:80,y:y+13,w:56,h:34,text:String(i+1).padStart(2,'0'),size:22,weight:800,
-      align:'center',role:'onAccent',ls:0}));
-    out.push(T({x:158,y:y+2,w:842,h:44,text:it[0],size:34,weight:700,role:'ink'}));
-    if(it[1])out.push(T({x:158,y:y+50,w:842,h:38,text:it[1],size:25,weight:400,role:'sub'}));
+    out.push(T({x:80,y:y,w:56,h:56,text:String(i+1).padStart(2,'0'),size:40,weight:800,lh:1,
+      align:'center',valign:'center',role:'onAccent',ls:0}));
+    out.push(T({x:158,y:y+2,w:842,h:48,text:it[0],size:36,weight:700,role:'ink'}));
+    if(it[1])out.push(T({x:158,y:y+54,w:842,h:48,text:it[1],size:30,weight:400,role:'sub'}));
     out.push(S({x:158,y:y+gap-26,w:842,h:1,role:'line'}));
   });
   return out;
@@ -445,30 +445,30 @@ function preset(kind){
     I({x:520,y:750,w:480,h:480,radius:999,src:''}),
   ];return c;},
   head:()=>{c.els=[
-    T({x:80,y:150,w:920,h:190,text:'제목 첫 줄\n제목 둘째 줄',size:62,weight:800,lh:1.32}),
+    T({x:80,y:150,w:920,h:190,text:'제목 첫 줄\n제목 둘째 줄',size:60,weight:800,lh:1.32}),
     T({x:80,y:365,w:920,h:130,text:'이 카드에서 하고 싶은 말을 두 문장 안에 적는다. 한 문장이 45자를 넘으면 자른다.',
-      size:30,weight:400,lh:1.6}),
+      size:32,weight:400,lh:1.6}),
     S({x:80,y:545,w:920,h:1,role:'line'}),
     T({x:80,y:590,w:920,h:150,text:'근거나 예를 여기에 적는다. 사람이 나오는 장면이나 손에 잡히는 숫자가 있으면 여기에 넣는다.',
-      size:30,weight:500,lh:1.6}),
+      size:32,weight:500,lh:1.6}),
     S({x:80,y:1030,w:920,h:1,role:'line'}),
     T({x:80,y:1080,w:920,h:130,text:'이 카드의 결론을\n한 줄로 적는다.',
-      size:38,weight:700,lh:1.5}),
+      size:36,weight:700,lh:1.5}),
     T({x:80,y:1225,w:920,h:56,text:'덧붙일 말이 있으면 여기에. 없으면 이 줄은 지운다.',
-      size:26,weight:400,role:'sub'}),
+      size:30,weight:400,role:'sub'}),
   ];return c;},
   list:()=>{c.els=[
-    T({x:80,y:150,w:920,h:190,text:'제목 첫 줄\n제목 둘째 줄',size:62,weight:800,lh:1.32}),
+    T({x:80,y:150,w:920,h:190,text:'제목 첫 줄\n제목 둘째 줄',size:60,weight:800,lh:1.32}),
     T({x:80,y:370,w:920,h:120,text:'항목을 나열하기 전에 한 문장. 무엇을 셋으로 나눌 것인지 여기서 예고한다.',
-      size:30,weight:500,lh:1.6}),
+      size:32,weight:500,lh:1.6}),
     ...numberList([['첫째 항목','한 줄 설명'],['둘째 항목','한 줄 설명'],
       ['셋째 항목','한 줄 설명']],570,175),
-    T({x:80,y:1150,w:920,h:100,text:'세 항목을 묶는 한 줄.',size:34,weight:700,lh:1.5}),
+    T({x:80,y:1150,w:920,h:100,text:'세 항목을 묶는 한 줄.',size:36,weight:700,lh:1.5}),
   ];return c;},
   compare:()=>{c.els=[
-    T({x:80,y:150,w:920,h:190,text:'제목 첫 줄\n제목 둘째 줄',size:62,weight:800,lh:1.32}),
+    T({x:80,y:150,w:920,h:190,text:'제목 첫 줄\n제목 둘째 줄',size:60,weight:800,lh:1.32}),
     T({x:80,y:370,w:920,h:130,text:'무엇과 무엇을 견주는지 여기서 밝힌다. 두 문장을 넘기지 않는다.',
-      size:30,weight:400,lh:1.6}),
+      size:32,weight:400,lh:1.6}),
     S({x:540,y:580,w:1,h:430,role:'line'}),
     T({x:80,y:580,w:400,h:52,text:'왼쪽 항목',size:38,weight:800}),
     T({x:600,y:580,w:400,h:52,text:'오른쪽 항목',size:38,weight:800}),
@@ -476,33 +476,33 @@ function preset(kind){
     T({x:600,y:680,w:400,h:300,text:'첫째\n\n둘째\n\n셋째',size:30,weight:400,lh:1.5,role:'sub'}),
     S({x:120,y:1050,w:840,h:6,role:'accent'}),
     T({x:80,y:1110,w:920,h:150,text:'두 칸을 견주면 무엇이 달라지는지 한두 문장으로 적는다.',
-      size:28,weight:400,lh:1.6}),
+      size:32,weight:400,lh:1.6}),
   ];return c;},
   media:()=>{c.els=[
-    T({x:80,y:150,w:920,h:190,text:'제목 첫 줄\n제목 둘째 줄',size:62,weight:800,lh:1.32}),
-    T({x:80,y:370,w:920,h:90,text:'이미지와 함께 볼 설명을 한 문장으로 적는다.',size:30,weight:400,lh:1.6}),
+    T({x:80,y:150,w:920,h:190,text:'제목 첫 줄\n제목 둘째 줄',size:60,weight:800,lh:1.32}),
+    T({x:80,y:370,w:920,h:90,text:'이미지와 함께 볼 설명을 한 문장으로 적는다.',size:32,weight:400,lh:1.6}),
     I({x:560,y:520,w:440,h:440}),
-    T({x:80,y:520,w:440,h:40,text:'라벨 1',size:24,weight:700,ls:.06,role:'accent'}),
+    T({x:80,y:520,w:440,h:40,text:'라벨 1',size:26,weight:700,ls:.06,role:'accent'}),
     T({x:80,y:568,w:440,h:50,text:'첫 번째 항목',size:34,weight:700}),
     T({x:80,y:630,w:440,h:180,text:'두세 줄 설명. 오른쪽에 이미지가 오므로 글은 짧게 끊는다.',
-      size:26,weight:400,lh:1.6,role:'sub'}),
+      size:30,weight:400,lh:1.6,role:'sub'}),
     S({x:80,y:850,w:440,h:1,role:'line'}),
-    T({x:80,y:890,w:440,h:40,text:'라벨 2',size:24,weight:700,ls:.06,role:'accent'}),
+    T({x:80,y:890,w:440,h:40,text:'라벨 2',size:26,weight:700,ls:.06,role:'accent'}),
     T({x:80,y:938,w:440,h:50,text:'두 번째 항목',size:34,weight:700}),
-    T({x:80,y:1000,w:440,h:150,text:'여기도 두세 줄로 짧게 적는다.',size:26,weight:400,lh:1.6,role:'sub'}),
+    T({x:80,y:1000,w:440,h:150,text:'여기도 두세 줄로 짧게 적는다.',size:30,weight:400,lh:1.6,role:'sub'}),
     T({x:80,y:1170,w:920,h:110,text:'두 항목을 묶는\n마무리 한 줄.',
-      size:34,weight:700,lh:1.5}),
+      size:36,weight:700,lh:1.5}),
   ];return c;},
   end:()=>{c.els=[
-    T({x:80,y:150,w:920,h:190,text:'제목 첫 줄\n제목 둘째 줄',size:62,weight:800,lh:1.32}),
+    T({x:80,y:150,w:920,h:190,text:'제목 첫 줄\n제목 둘째 줄',size:60,weight:800,lh:1.32}),
     S({x:80,y:400,w:920,h:1,role:'line'}),
     ...numberList([['첫째 요약','한 줄 설명을 적는다.'],
       ['둘째 요약','한 줄 설명을 적는다.'],
       ['셋째 요약','한 줄 설명을 적는다.']],450,175),
-    T({x:80,y:1030,w:920,h:40,text:'마무리 라벨',size:24,weight:700,ls:.04,role:'accent'}),
+    T({x:80,y:1030,w:920,h:40,text:'마무리 라벨',size:26,weight:700,ls:.04,role:'accent'}),
     T({x:80,y:1085,w:920,h:100,text:'마지막으로 남길 말을 한두 문장으로 적는다.',
-      size:30,weight:500,lh:1.55}),
-    T({x:80,y:1210,w:920,h:70,text:'==편 전체의 결론 한 줄.==',size:34,weight:800,lh:1.5}),
+      size:32,weight:500,lh:1.55}),
+    T({x:80,y:1210,w:920,h:70,text:'==편 전체의 결론 한 줄.==',size:36,weight:800,lh:1.5}),
   ];return c;},
   blank:()=>c };
   return (P[kind]||P.blank)();
