@@ -1,5 +1,5 @@
 /* 정본 GraphCrackers 디자인 시스템 gc_tokens.css 의 사본 · 고치지 마라 */
-/* 정본 sha256 1e9bc2c48f9b921355543b93dd68b688db11c5053db45a9e3ca9b40aff76e716 */
+/* 정본 sha256 4a0d4a6e45bcefefe525c836ea2e10101cac3973c3c37d7c91fcca9fdd7cd5a3 */
 :root{
   --gc-yellow:#FFC000;
   --gc-black:#0A0A0A;
@@ -31,6 +31,7 @@
   --gc-p-rule:#B4BAC1;
   --gc-p-card:#F4F4F2;
   --gc-p-tint:#FFF3CC;
+  --gc-p-card-soft:#FAFAF9;
   --gc-hz-angle:-45deg;
   --gc-hz-s:2.4mm;
   --gc-hz-m:4.2mm;
@@ -42,6 +43,7 @@
   --gc-hz-s-px:7px;
   --gc-hz-m-px:12px;
   --gc-band-px:10px;
+  --gc-band-thin-px:5px;
   --gc-frame-px:6px;
   --gc-hz-S:repeating-linear-gradient(var(--gc-hz-angle),var(--gc-yellow) 0 var(--gc-hz-s),var(--gc-black-pure) var(--gc-hz-s) calc(2*var(--gc-hz-s)));
   --gc-hz-M:repeating-linear-gradient(var(--gc-hz-angle),var(--gc-yellow) 0 var(--gc-hz-m),var(--gc-black-pure) var(--gc-hz-m) calc(2*var(--gc-hz-m)));
