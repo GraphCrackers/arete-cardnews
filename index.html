@@ -822,24 +822,27 @@ function cardPanel(){
 
 function bind(){
   const box=$('#inspector');
+  // 칸이 그려질 때의 대상을 잡아 둔다. change 는 칸을 벗어날 때 늦게 오므로,
+  // 그 사이 캔버스에서 다른 요소를 누르면 sel() 이 이미 그 요소라 내용이 엉뚱하게 옮겨 간다
+  const e0=sel(), g0=selAll();
   box.querySelectorAll('[data-k]').forEach(inp=>{
     const k=inp.dataset.k, ev=(inp.type==='range')?'input':'change';
     inp.addEventListener(ev,()=>{
-      const e=sel(); if(!e)return; let v=inp.value;
+      const e=e0; if(!e)return; let v=inp.value;
       if(['size','weight','x','y','w','h','radius','rot'].includes(k))v=parseFloat(v)||0;
       if(['lh','ls','opacity'].includes(k))v=parseFloat(v);
       // 크기 칸에 숫자를 쳐도 ± 버튼처럼 바뀐 폭만큼 고른 글상자 모두에 더한다
-      if(k==='size'){const d=v-e.size;for(const x of selAll())if(x.type==='text')x.size=Math.max(8,x.size+d);render();return;}
+      if(k==='size'){const d=v-e.size;for(const x of g0)if(x.type==='text')x.size=Math.max(8,x.size+d);render();return;}
       // 여러 개를 골랐으면 이 값들은 그 속성이 있는 요소 모두에 같이 준다
       const isText=x=>x.type==='text', SAME={opacity:()=>true, role:x=>x.type!=='image',
         weight:isText, font:isText, lh:isText, ls:isText, radius:x=>x.type!=='text', rot:()=>true};
-      if(SAME[k])for(const x of selAll())if(SAME[k](x))x[k]=v;
+      if(SAME[k])for(const x of g0)if(SAME[k](x))x[k]=v;
       e[k]=v;
       if(inp.type==='range'||k==='text'){paint($('#canvas'),card(),cur,project.cards.length);chrome();cardList();save();}
       else render();
     });
     if(inp.type==='range')inp.addEventListener('change',render);
-    if(k==='text')inp.addEventListener('input',()=>{const e=sel();if(!e)return;e.text=inp.value;
+    if(k==='text')inp.addEventListener('input',()=>{const e=e0;if(!e)return;e.text=inp.value;
       paint($('#canvas'),card(),cur,project.cards.length);chrome();save();});
   });
   box.querySelectorAll('[data-bg]').forEach(inp=>inp.addEventListener(inp.type==='text'?'change':'input',()=>{
