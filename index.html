@@ -256,17 +256,14 @@ const NAMED = (function(){
 /* ============ 색상 랜덤용 추천 조합 ============
    [배경, 본문, 포인트, 형광]. 모두 색 목록(NAMED)에 있는 색이다.
    본문 대비 10:1 이상, 포인트·포인트 위 글자·형광 위 글자 4.5:1 이상으로 맞췄다 */
+// 배경은 게시한 편들이 쓴 밝은 색 4가지 안에서만 고른다 (회복탄력성 mercury · AI 학교 cloud · 기업가 ivory · 꼼꼼히 읽기 white)
+const BGS=['#E5E5E5','#F1F2F6','#F5F5E9','#FFFFFF'];
 const PALETTES={
   light:[['#F1F2F6','#333333','#3355D6','#8A8FF8'],['#F5F5E9','#1D1814','#014D2F','#CBEE88'],
     ['#FFF4D6','#1D1814','#BA2320','#FDD596'],['#FFFFFF','#000000','#CD1F1D','#E2DA56'],
     ['#E5E5E5','#333333','#253368','#A3D9F2'],['#F3E7D9','#1D1814','#17666D','#70C5CA'],
     ['#E2DDD7','#0E0906','#723277','#EFCAD6'],['#FFFFFF','#14162F','#B032EB','#D3B5FF'],
-    ['#F5F5E9','#333333','#007A70','#A8CC8C'],['#FFF4D6','#1D1814','#2A4161','#FF9855']],
-  dark:[['#14162F','#FFFFFF','#8A8FF8','#CBEE88'],['#002923','#F5F5E9','#70C5CA','#E2DA56'],
-    ['#1D1814','#FFF4D6','#FF9855','#FDD596'],['#000000','#FFFFFF','#EB5E31','#E2DA56'],
-    ['#0A0A0A','#E5E5E5','#26C3EC','#ED87AD'],['#253368','#F5F5E9','#F9A801','#ACCAF0'],
-    ['#333333','#FFFFFF','#E2DA56','#72BDBB'],['#0E0906','#F3E7D9','#E6A737','#F2B7C9'],
-    ['#14162F','#FFF4D6','#36BDE7','#EAD29A'],['#1D1814','#FFFFFF','#D3B5FF','#A8CC8C']]};
+    ['#F5F5E9','#333333','#007A70','#A8CC8C'],['#FFF4D6','#1D1814','#2A4161','#FF9855']]};
 
 /* ============ 유틸 ============ */
 let W=1080, H=1350;
@@ -743,13 +740,11 @@ function cardPanel(){
       return `<button class="rolepick ${open?'open':''}" data-roleopen="${k}">
         <span class="sw" style="background:${R[k]}"></span><span class="nm">${n}</span>
         <span class="cn">${esc(nm)}</span><span class="ar">${open?'▲':'▼'}</span></button>`
-        +(open?`<div class="results">${NAMED.map(c=>`<button data-rolepick="${k}" data-hex="${c.h}" class="${same(c.h,R[k])?'on':''}">
+        +(open?`<div class="results">${(k==='bg'?NAMED.filter(c=>BGS.includes(c.h.toUpperCase())):NAMED).map(c=>`<button data-rolepick="${k}" data-hex="${c.h}" class="${same(c.h,R[k])?'on':''}">
           <span class="sw" style="background:${c.h}"></span><span class="nm">${esc(c.n)}</span><span class="hx">${c.h}</span></button>`).join('')}</div>`:'');
     }).join('');
-    h+=`<div class="row" style="margin-top:6px"><div class="field"><div class="seg" data-seg="dark">
-      <button data-v="0" class="${t.dark?'':'on'}">라이트</button><button data-v="1" class="${t.dark?'on':''}">다크</button></div></div>
-      <div class="field"><button class="btn" style="width:100%" data-act="randcolor">🎲 색상 랜덤</button></div></div>`;
-    h+=`<p class="hint">색 고르기가 귀찮으면 라이트·다크를 고르고 ‘색상 랜덤’을 누르세요. 누를 때마다 어울리는 조합으로 바뀝니다.</p>`;
+    h+=`<div class="field" style="margin-top:6px"><button class="btn" style="width:100%" data-act="randcolor">🎲 색상 랜덤</button></div>`;
+    h+=`<p class="hint">배경은 게시한 편들이 쓴 밝은 색 4가지 중에서만 고를 수 있어요. 색 고르기가 귀찮으면 ‘색상 랜덤’을 누르세요. 누를 때마다 어울리는 조합으로 바뀝니다.</p>`;
   }
   h+=`<div class="roles">
     <div><i style="background:${R.bg}"></i>배경</div><div><i style="background:${R.ink}"></i>본문</div>
@@ -867,8 +862,6 @@ function bind(){
     const v=ev.target.dataset.v; if(v===undefined)return; const key=seg.dataset.seg, e=sel();
     if(key==='bgtype')card().bg.type=v;
     else if(key==='ratio'){project.size={w:1080,h:v==='45'?1350:1080};applySize();}
-    // 라이트·다크를 바꾸면 그 테마의 조합을 바로 하나 입힌다
-    else if(key==='dark'){project.theme.dark=v==='1';return act('randcolor');}
     else if(key==='header'||key==='footer')project.frame[key]=v==='1';
     else if(key==='logoOn')project.frame.logoOn=v==='1';
     // 정렬·기울임·맞춤도 고른 요소 중 같은 종류 모두에 준다
@@ -904,7 +897,7 @@ function act(a){
   if(a==='pickbg')pickImg(d=>{card().bg.src=d;card().bg.type='image';render();});
   if(a==='picklogo')pickImg(d=>{project.frame.logo=d;render();});
   if(a==='logoreset'){project.frame.logo='';render();toast('기본 ARETE 로고로 되돌렸어요');}
-  if(a==='randcolor'){const t=project.theme, R=roles(), list=PALETTES[t.dark?'dark':'light'];
+  if(a==='randcolor'){const t=project.theme, R=roles(), list=PALETTES.light.filter(p=>BGS.includes(p[0]));
     const rest=list.filter(p=>p[0]!==R.bg||p[2]!==R.accent);
     const [bg,ink,accent,hl]=rest[Math.floor(Math.random()*rest.length)];
     t.roleMap={bg,ink,accent,hl};render();}
