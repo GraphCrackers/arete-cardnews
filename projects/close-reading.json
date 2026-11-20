@@ -90,7 +90,7 @@
           "ls": -0.02,
           "align": "left",
           "valign": "start",
-          "role": "ink",
+          "role": "sub",
           "color": null,
           "font": null,
           "italic": false,
