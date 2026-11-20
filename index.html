@@ -286,10 +286,11 @@ const onColor=(bg,a,b)=>ratio(bg,a)>=ratio(bg,b)?a:b;
 
 /* ============ 폰트 ============ */
 // 첫 항목이 기본 서체 — 새 편은 이걸로 시작하고 목록 맨 위에 ★ 로 보인다
-const FAMS=['Brand','CormorantGaramond','Pretendard','SUIT','Paperlogy','GmarketSans','MBK','NotoSerifKR'];
+const FAMS=['SUIT','Brand','CormorantGaramond','Pretendard','Paperlogy','GmarketSans','NotoSerifKR'];
 // 드롭다운에 보일 이름. 브랜드 서체는 어디에 쓰는 것인지 붙여 둔다
-const FLABEL={NotoSerifKR:'Noto Serif KR — 브랜드 본문(명조)',
-              Brand:'★ 브랜드 기본 — 영문 Cormorant + 한글 Noto Serif',
+const FLABEL={SUIT:'★ SUIT — 기본',
+              NotoSerifKR:'Noto Serif KR — 브랜드 본문(명조)',
+              Brand:'브랜드 명조 — 영문 Cormorant + 한글 Noto Serif',
               CormorantGaramond:'Cormorant Garamond — 브랜드 라틴',
               GmarketSans:'Gmarket Sans'};
 const FALLBACK="'Apple SD Gothic Neo','Malgun Gothic',sans-serif";
@@ -304,7 +305,6 @@ function famOf(fn){
   if(s.includes('pretendard'))return 'Pretendard';
   if(s.includes('paperlogy'))return 'Paperlogy';
   if(s.includes('suit'))return 'SUIT';
-  if(s.includes('mbk'))return 'MBK';
   if(s.includes('notoserif'))return 'NotoSerifKR';
   if(s.includes('cormorant'))return 'CormorantGaramond';
   return null;
@@ -1231,7 +1231,7 @@ $('#fontPick').onchange=async()=>{
   toast('폰트 읽는 중…');
   const n=await loadFontFiles([...$('#fontPick').files]);
   $('#fontPick').value='';
-  toast(n?`${n}개 폰트 파일 적용 — ${Object.keys(loaded).join(', ')}`:'인식된 폰트가 없어요 (파일 이름에 gmarket/pretendard/paperlogy/suit/mbk 포함 필요)');
+  toast(n?`${n}개 폰트 파일 적용 — ${Object.keys(loaded).join(', ')}`:'인식된 폰트가 없어요 (파일 이름에 gmarket/pretendard/paperlogy/suit 포함 필요)');
   render();
 };
 $('#btnAddCard').onclick=()=>{project.cards.splice(cur+1,0,preset('blank'));cur++;selId=null;render();};

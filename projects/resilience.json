@@ -2188,26 +2188,6 @@
           "radius": 0,
           "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2256%22%20height%3D%2272%22%20viewBox%3D%220%200%2056%2072%22%3E%3Cpath%20d%3D%22M52%2036.0L25.12%206V21.6H4V50.4H25.12V66Z%22%20fill%3D%22%23FF9855%22%20stroke%3D%22%23FF9855%22%20stroke-width%3D%226%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E",
           "fit": "contain"
-        },
-        {
-          "id": "bcv8yco",
-          "type": "text",
-          "x": 378,
-          "y": 60,
-          "w": 659,
-          "h": 180,
-          "text": "특히 사건에 대한 해석은 피드백을 받고 재시도하는 경험이 반복될 때 바뀐다. 그리고 사건에 대해서 어떤 해석을 하느냐는, 이후 학생의 성장과 퍼포먼스에 중대한 영향을 끼쳤다. \n\n",
-          "size": 32,
-          "weight": 400,
-          "lh": 1.6,
-          "ls": -0.02,
-          "align": "left",
-          "valign": "start",
-          "role": "ink",
-          "color": null,
-          "font": null,
-          "italic": false,
-          "opacity": 1
         }
       ]
     },
@@ -2790,7 +2770,7 @@
           "id": "466f50b",
           "type": "text",
           "x": 80,
-          "y": 834,
+          "y": 800,
           "w": 920,
           "h": 100,
           "opacity": 1,
