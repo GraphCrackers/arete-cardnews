@@ -2510,6 +2510,18 @@
           "font": null,
           "italic": false,
           "opacity": 1
+        },
+        {
+          "id": "ku11e17",
+          "type": "image",
+          "x": 80,
+          "y": 690,
+          "w": 300,
+          "h": 360,
+          "src": "assets/img/known-unknown-11-ad51ea9a.png",
+          "fit": "contain",
+          "radius": 0,
+          "opacity": 1
         }
       ]
     }
