@@ -145,7 +145,11 @@ input[type=range]{width:100%;accent-color:var(--sel)}
 .bar .spacer{flex:1}
 .picker{position:fixed;inset:0;background:color-mix(in srgb,var(--gc-black) 55%,transparent);display:grid;place-items:center;z-index:60}
 .pbox{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;
-  width:min(460px,88vw);max-height:76vh;overflow:auto}
+  width:min(760px,92vw);max-height:80vh;overflow:auto}
+.pcols{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.pcols h3{margin:0 0 8px;font-size:12px;color:var(--dim);font-weight:var(--gc-w-bold)}
+.pcols .empty{color:var(--dim);font-size:12px}
+@media (max-width:600px){.pcols{grid-template-columns:1fr}}
 .pbox h2{margin:0 0 4px;font-size:16px}
 .pbox p{margin:0 0 14px;color:var(--dim);font-size:12px;line-height:1.6}
 .pbox a.item{display:block;background:var(--field);border:1px solid var(--edge);border-radius:var(--r);
@@ -1375,14 +1379,17 @@ async function picker(manual){
     <h2>${manual?'다른 편 열기':'어떤 카드뉴스를 열까요?'}</h2>
     <p>${manual?'지금 작업은 이 브라우저에 자동으로 남습니다. 모두에게 공유하려면 <b>사이트에 반영</b>을 누르세요.'
                :'편집할 편을 고르세요. 주소창에 <code>?p=파일이름</code> 을 붙여도 바로 열립니다.'}</p>
-    ${list.map(x=>{
+    <div class="pcols">${[['게시 전',list.filter(x=>!x.posted)],
+      // 게시 완료는 최근 게시가 위로
+      ['게시 완료',list.filter(x=>x.posted).sort((a,b)=>b.posted.localeCompare(a.posted))]].map(([h,xs])=>
+      `<div><h3>${h} · ${xs.length}</h3>${xs.map(x=>{
       const on = PID && x.id===PID;
       // posted: index.json 에 손으로 적는 게시 완료일 (예: "2026-09-26")
       const d = x.posted && x.posted.split('-');
       return `<a class="item${on?' on':''}${d?' done':''}" href="?p=${encodeURIComponent(x.id)}">${esc(x.title||x.id)}
-        ${d?`<span class="posted">✓ 게시 완료 ${+d[1]}월 ${+d[2]}일</span>`:''}
+        ${d?`<span class="posted">✓ ${+d[1]}월 ${+d[2]}일</span>`:''}
         ${on?'<b>지금 보는 편</b>':''}<small>projects/${esc(x.id)}.json</small></a>`;
-    }).join('')}
+    }).join('')||'<p class="empty">없음</p>'}</div>`).join('')}</div>
     <div class="row" style="margin-top:8px">
       ${manual?'<button class="btn" style="width:100%" id="pkClose">닫기</button>':''}
       <button class="btn" style="width:100%" id="pkNew">빈 카드뉴스로 시작</button></div></div>`;
