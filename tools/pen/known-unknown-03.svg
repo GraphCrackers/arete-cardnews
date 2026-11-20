@@ -1,14 +1,19 @@
-<!-- 달 -->
-<path stroke-width="9" d="M70 22 A30 30 0 1 0 104 70 A24 24 0 0 1 70 22 Z"/>
-<!-- 머리를 감싸 쥔 학생 -->
-<circle cx="220" cy="78" r="30" stroke-width="11"/>
-<g fill="#111" stroke="none"><circle cx="210" cy="86" r="4.5"/><circle cx="230" cy="86" r="4.5"/></g>
-<path stroke-width="11" d="M220 108 L220 158 M220 124 L178 112 L192 70 M220 124 L262 112 L248 70"/>
-<path stroke-width="7" d="M268 48 l14 -12 M276 68 l18 -4"/>
-<!-- 책상과 펼친 책 -->
-<path stroke-width="11" d="M60 160 L400 160 M90 160 L90 215 M370 160 L370 215"/>
-<path stroke-width="8" d="M160 158 L190 142 L220 152 L250 142 L280 158"/>
-<!-- 스탠드 -->
-<path stroke-width="9" d="M338 158 L370 158 M354 158 L354 104 L326 84"/>
-<path stroke-width="9" d="M300 94 L328 70 L346 96 Z"/>
-<path stroke-width="6" d="M302 112 l-10 12 M318 116 l-4 14"/>
+<!-- 다 안다는 얼굴: 턱을 들고 내려다보는 실눈, 한쪽만 올라간 입꼬리 -->
+<circle cx="170" cy="96" r="58" stroke-width="10"/>
+<!-- 높이 치켜올린 눈썹 -->
+<path stroke-width="7" d="M134 68 Q147 56 160 62 M184 62 Q197 56 210 68"/>
+<!-- 반쯤 감은 눈꺼풀 + 아래로 깔린 눈동자 -->
+<path stroke-width="6" d="M136 84 L160 82 M184 82 L208 84"/>
+<g fill="#111" stroke="none"><circle cx="150" cy="89" r="4.5"/><circle cx="196" cy="89" r="4.5"/></g>
+<!-- 씩 웃는 입 -->
+<path stroke-width="6" d="M146 118 Q172 128 200 106"/>
+<!-- 목과 어깨 -->
+<path stroke-width="10" d="M170 154 L170 200 M110 200 Q170 168 230 200"/>
+<!-- 치켜든 검지 -->
+<path stroke-width="10" d="M228 196 L268 128"/>
+<path stroke-width="8" d="M268 128 L274 82"/>
+<path stroke-width="7" d="M262 132 q10 -6 14 6"/>
+<!-- 반짝 -->
+<path stroke-width="6" d="M308 56 l0 30 M293 71 l30 0 M70 120 l0 22 M59 131 l22 0 M330 132 l0 18 M321 141 l18 0"/>
+<!-- 자신만만 기척 -->
+<path stroke-width="6" d="M96 52 l-20 -12 M92 78 l-22 0"/>

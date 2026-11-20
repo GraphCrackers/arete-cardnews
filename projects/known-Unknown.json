@@ -482,11 +482,11 @@
         {
           "id": "ku03e10",
           "type": "image",
-          "x": 80,
-          "y": 962,
+          "x": 600,
+          "y": 440,
           "w": 400,
           "h": 200,
-          "src": "assets/img/known-unknown-03-44f75add.png",
+          "src": "assets/img/known-unknown-03-1ce32a3a.png",
           "fit": "contain",
           "radius": 0,
           "opacity": 1
