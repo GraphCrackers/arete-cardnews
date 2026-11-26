@@ -27,7 +27,7 @@
     "dark": false,
     "font": "SUIT",
     "roleMap": {
-      "bg": "#E5E5E5",
+      "bg": "#FFFFFF",
       "ink": "#333333",
       "accent": "#3355D6",
       "hl": "#CBEE88"
